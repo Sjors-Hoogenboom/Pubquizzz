@@ -59,4 +59,69 @@ public class PubquizController : ControllerBase
         
         return Ok(pubquizDto);
     }
+
+    [HttpPost]
+    public IActionResult CreatePubquiz(CreatePubquizDTO createPubquizDto)
+    {
+        var pubquiz = new Pubquiz()
+        {
+            Title = createPubquizDto.Title,
+            Description = createPubquizDto.Description,
+        };
+        
+        _dbContext.Pubquizes.Add(pubquiz);
+        _dbContext.SaveChanges();
+
+        var pubquizDto = new PubquizDTO()
+        {
+            PubquizId = pubquiz.PubquizId,
+            Title = pubquiz.Title,
+            Description = pubquiz.Description,
+        };
+        
+        return CreatedAtAction(nameof(GetPubquizById), new { id = pubquiz.PubquizId }, pubquizDto);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdatePubquiz(Guid id, UpdatePubquizDTO updatePubquizDto)
+    {
+        var pubquiz = _dbContext.Pubquizes.Find(id);
+
+        if (pubquiz == null)
+        {
+            return NotFound();   
+        }
+        
+        pubquiz.Title = updatePubquizDto.Title;
+        pubquiz.Description = updatePubquizDto.Description;
+        
+        _dbContext.SaveChanges();
+
+        var pubquizDto = new PubquizDTO()
+        {
+            PubquizId = pubquiz.PubquizId,
+            Title = pubquiz.Title,
+            Description = pubquiz.Description,
+            CreatorId = pubquiz.CreatorId,
+            CreationDate = pubquiz.CreationDate
+        };
+        
+        return Ok(pubquizDto);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeletePubquiz(Guid id)
+    {
+        var pubquiz = _dbContext.Pubquizes.Find(id);
+
+        if (pubquiz == null)
+        {
+            return NotFound();
+        }
+        
+        _dbContext.Pubquizes.Remove(pubquiz);
+        _dbContext.SaveChanges();
+        
+        return Ok();
+    }
 }
