@@ -81,6 +81,9 @@ namespace PubquizBackend.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -99,6 +102,9 @@ namespace PubquizBackend.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
                     b.Property<string>("QuestionDescription")
                         .HasColumnType("nvarchar(max)");
 
@@ -107,6 +113,9 @@ namespace PubquizBackend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("QuestionType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeLimit")
                         .HasColumnType("int");
 
                     b.HasKey("QuestionId");
@@ -131,12 +140,11 @@ namespace PubquizBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProfileImage")
-                        .IsRequired()
+                    b.Property<string>("ProfileImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
@@ -179,12 +187,17 @@ namespace PubquizBackend.Migrations
             modelBuilder.Entity("PubquizBackend.Models.Entities.UserRole", b =>
                 {
                     b.HasOne("PubquizBackend.Models.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PubquizBackend.Models.Entities.User", b =>
+                {
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

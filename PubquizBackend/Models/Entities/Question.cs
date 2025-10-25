@@ -7,7 +7,8 @@ public class Question
     public QuestionType QuestionType { get; set; }
     public string QuestionText { get; set; }
     public string? QuestionDescription { get; set; }
-    
+    public int Points { get; set; } = 1000;
+    public int TimeLimit { get; set; } = 20;
 }
 
 public enum QuestionType

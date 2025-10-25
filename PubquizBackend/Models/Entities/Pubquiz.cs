@@ -7,4 +7,5 @@ public class Pubquiz
     public String Title { get; set; }
     public String? Description { get; set; }
     public DateTime CreationDate { get; set; }
+    public bool IsPublished { get; set; }
 }
