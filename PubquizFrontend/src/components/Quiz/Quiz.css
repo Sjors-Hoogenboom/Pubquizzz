@@ -1,0 +1,13 @@
+:root {
+    --quiz-orange: #f59e0b;
+    --quiz-green: #16a34a;
+    --quiz-red: #dc2626;
+}
+
+.question-text{
+    transition: color 240ms ease-in-out;
+}
+
+.question-text.answered{ color: var(--quiz-orange); }
+.question-text.correct { color: var(--quiz-green); }
+.question-text.wrong   { color: var(--quiz-red); }
