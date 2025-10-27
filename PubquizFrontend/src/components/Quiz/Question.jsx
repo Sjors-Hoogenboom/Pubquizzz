@@ -1,5 +1,5 @@
-import QuestionTimer from "@/components/Quiz/QuestionTimer.tsx";
-import Answers from "@/components/Quiz/Answers.tsx";
+import QuestionTimer from "@/components/Quiz/QuestionTimer.jsx";
+import Answers from "@/components/Quiz/Answers.jsx";
 import {useState} from "react";
 import QUESTIONS from "@/data/questions";
 
@@ -13,7 +13,7 @@ export default function Question({
         isCorrect: null
     })
 
-    let timer: number = 10000;
+    let timer = 10000;
 
     if (answer.selectedAnswer) {
         timer = 1000;

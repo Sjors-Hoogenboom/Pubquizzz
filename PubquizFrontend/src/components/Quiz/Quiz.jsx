@@ -1,8 +1,8 @@
 import {useCallback, useState} from "react";
 import QUESTIONS from '../../data/questions.js'
-import Question from './Question'
+import Question from './Question.jsx'
 import './Quiz.css'
-import Summary from './Summary'
+import Summary from './Summary.jsx'
 
 export default function Quiz() {
     const [userAnswers, setUserAnswers] = useState([])
