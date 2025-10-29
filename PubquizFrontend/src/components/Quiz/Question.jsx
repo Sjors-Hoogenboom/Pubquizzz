@@ -1,10 +1,10 @@
 import QuestionTimer from "@/components/Quiz/QuestionTimer.jsx";
 import Answers from "@/components/Quiz/Answers.jsx";
-import {useState} from "react";
-import QUESTIONS from "@/data/questions";
+import { useState } from "react";
 
 export default function Question({
                                      index,
+                                     question,
                                      onSelectAnswer,
                                      onSkipAnswer
                                  }) {
@@ -32,7 +32,7 @@ export default function Question({
         setTimeout(() => {
             setAnswer({
                 selectedAnswer: answer,
-                isCorrect: QUESTIONS[index].answers[0] === answer
+                isCorrect: question.answers[0] === answer
             })
 
             setTimeout(() => {
@@ -42,7 +42,6 @@ export default function Question({
     }
 
     let answerState = '';
-
     if (answer.selectedAnswer && answer.isCorrect !== null) {
         answerState = answer.isCorrect ? 'correct' : 'wrong'
     } else if (answer.selectedAnswer) {
@@ -58,10 +57,11 @@ export default function Question({
                 mode={answerState}
             />
             <h2 className={`question-text ${answerState || ''}`}>
-                {QUESTIONS[index].text}
+                {question.text}
             </h2>
             <Answers
-                answers={QUESTIONS[index].answers}
+                key={question.questionId ?? `${index}`}
+                answers={question.answers}
                 selectedAnswer={answer.selectedAnswer}
                 answerState={answerState}
                 onSelect={handleSelectAnswer}

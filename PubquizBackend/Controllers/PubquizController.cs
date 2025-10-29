@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PubquizBackend.Data;
 using PubquizBackend.Models.Dtos;
-using PubquizBackend.Models.Entities;
+using PubquizBackend.Models.Helpers;
 
 namespace PubquizBackend.Controllers;
 
@@ -16,112 +17,36 @@ public class PubquizController : ControllerBase
         _dbContext = dbContext;
     }
     
-    [HttpGet]
-    public IActionResult GetAllPubquizes()
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<QuizDto>> GetFullQuiz(Guid id)
     {
-        var pubquizes = _dbContext.Pubquizes.ToList();
+        var quiz = await _dbContext.Pubquizes
+            .AsNoTracking()
+            .Where(p => p.PubquizId == id && p.IsPublished)
+            .Include(p => p.PubquizQuestions)
+            .ThenInclude(pq => pq.Question)
+            .ThenInclude(q => q.AnswerOptions)
+            .FirstOrDefaultAsync();
+
+        if (quiz is null) return NotFound();
         
-        var pubquizesDto = new List<PubquizDTO>();
-        foreach (var pubquiz in pubquizes)
-        {
-            pubquizesDto.Add(new PubquizDTO()
-            {
-                PubquizId = pubquiz.PubquizId,
-                CreatorId = pubquiz.CreatorId,
-                Title = pubquiz.Title,
-                Description = pubquiz.Description,
-                CreationDate = pubquiz.CreationDate,
-            });
-        }
-        
-        return Ok(pubquizesDto);
+        return Ok(quiz.ToDto());
     }
 
-    [HttpGet]
-    [Route("{id}")]
-    public IActionResult GetPubquizById(Guid id)
+    [HttpGet("/latest")]
+    public async Task<ActionResult<QuizDto>> GetLatestPublishedQuiz()
     {
-        var pubquiz = _dbContext.Pubquizes.Find(id);
+        var quiz = await _dbContext.Pubquizes
+            .AsNoTracking()
+            .Where(p => p.IsPublished)
+            .OrderByDescending(p => p.CreationDate)
+            .Include(p => p.PubquizQuestions)
+            .ThenInclude(pq => pq.Question)
+            .ThenInclude(q => q.AnswerOptions)
+            .FirstOrDefaultAsync();
 
-        if (pubquiz == null)
-        {
-            return NotFound();
-        }
+        if (quiz is null) return NotFound();
 
-        var pubquizDto = new PubquizDTO()
-        {
-            PubquizId = pubquiz.PubquizId,
-            CreatorId = pubquiz.CreatorId,
-            Title = pubquiz.Title,
-            Description = pubquiz.Description,
-            CreationDate = pubquiz.CreationDate,
-        };
-        
-        return Ok(pubquizDto);
-    }
-
-    [HttpPost]
-    public IActionResult CreatePubquiz(CreatePubquizDTO createPubquizDto)
-    {
-        var pubquiz = new Pubquiz()
-        {
-            Title = createPubquizDto.Title,
-            Description = createPubquizDto.Description,
-        };
-        
-        _dbContext.Pubquizes.Add(pubquiz);
-        _dbContext.SaveChanges();
-
-        var pubquizDto = new PubquizDTO()
-        {
-            PubquizId = pubquiz.PubquizId,
-            Title = pubquiz.Title,
-            Description = pubquiz.Description,
-        };
-        
-        return CreatedAtAction(nameof(GetPubquizById), new { id = pubquiz.PubquizId }, pubquizDto);
-    }
-
-    [HttpPut("{id}")]
-    public IActionResult UpdatePubquiz(Guid id, UpdatePubquizDTO updatePubquizDto)
-    {
-        var pubquiz = _dbContext.Pubquizes.Find(id);
-
-        if (pubquiz == null)
-        {
-            return NotFound();   
-        }
-        
-        pubquiz.Title = updatePubquizDto.Title;
-        pubquiz.Description = updatePubquizDto.Description;
-        
-        _dbContext.SaveChanges();
-
-        var pubquizDto = new PubquizDTO()
-        {
-            PubquizId = pubquiz.PubquizId,
-            Title = pubquiz.Title,
-            Description = pubquiz.Description,
-            CreatorId = pubquiz.CreatorId,
-            CreationDate = pubquiz.CreationDate
-        };
-        
-        return Ok(pubquizDto);
-    }
-
-    [HttpDelete("{id}")]
-    public IActionResult DeletePubquiz(Guid id)
-    {
-        var pubquiz = _dbContext.Pubquizes.Find(id);
-
-        if (pubquiz == null)
-        {
-            return NotFound();
-        }
-        
-        _dbContext.Pubquizes.Remove(pubquiz);
-        _dbContext.SaveChanges();
-        
-        return Ok();
+        return Ok(quiz.ToDto());
     }
 }

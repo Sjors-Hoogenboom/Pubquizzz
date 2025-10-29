@@ -22,6 +22,29 @@ namespace PubquizBackend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PubquizBackend.Models.Entities.AnswerOption", b =>
+                {
+                    b.Property<Guid>("AnswerOptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AnswerOptionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("AnswerOptions");
+                });
+
             modelBuilder.Entity("PubquizBackend.Models.Entities.Game", b =>
                 {
                     b.Property<Guid>("GameId")
@@ -91,6 +114,24 @@ namespace PubquizBackend.Migrations
                     b.HasKey("PubquizId");
 
                     b.ToTable("Pubquizes");
+                });
+
+            modelBuilder.Entity("PubquizBackend.Models.Entities.PubquizQuestion", b =>
+                {
+                    b.Property<Guid>("PubquizId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.HasKey("PubquizId", "QuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("PubquizQuestions");
                 });
 
             modelBuilder.Entity("PubquizBackend.Models.Entities.Question", b =>
@@ -165,6 +206,17 @@ namespace PubquizBackend.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("PubquizBackend.Models.Entities.AnswerOption", b =>
+                {
+                    b.HasOne("PubquizBackend.Models.Entities.Question", "Question")
+                        .WithMany("AnswerOptions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("PubquizBackend.Models.Entities.GameParticipant", b =>
                 {
                     b.HasOne("PubquizBackend.Models.Entities.Game", "Game")
@@ -184,6 +236,25 @@ namespace PubquizBackend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PubquizBackend.Models.Entities.PubquizQuestion", b =>
+                {
+                    b.HasOne("PubquizBackend.Models.Entities.Pubquiz", "Pubquiz")
+                        .WithMany("PubquizQuestions")
+                        .HasForeignKey("PubquizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PubquizBackend.Models.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pubquiz");
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("PubquizBackend.Models.Entities.UserRole", b =>
                 {
                     b.HasOne("PubquizBackend.Models.Entities.User", "User")
@@ -193,6 +264,16 @@ namespace PubquizBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PubquizBackend.Models.Entities.Pubquiz", b =>
+                {
+                    b.Navigation("PubquizQuestions");
+                });
+
+            modelBuilder.Entity("PubquizBackend.Models.Entities.Question", b =>
+                {
+                    b.Navigation("AnswerOptions");
                 });
 
             modelBuilder.Entity("PubquizBackend.Models.Entities.User", b =>
