@@ -1,6 +1,6 @@
 import QuestionTimer from "@/components/Quiz/QuestionTimer.jsx";
 import Answers from "@/components/Quiz/Answers.jsx";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function Question({
                                      index,
@@ -8,10 +8,12 @@ export default function Question({
                                      onSelectAnswer,
                                      onSkipAnswer
                                  }) {
+    if (!question) return null;
     const [answer, setAnswer] = useState({
         selectedAnswer: '',
         isCorrect: null
     })
+    const timeouts = useRef([]);
 
     let timer = 10000;
 
@@ -23,22 +25,18 @@ export default function Question({
         timer = 2000;
     }
 
-    function handleSelectAnswer(answer) {
+    function handleSelectAnswer(selected) {
         setAnswer({
-            selectedAnswer: answer,
+            selectedAnswer: selected,
             isCorrect: null
         })
 
-        setTimeout(() => {
-            setAnswer({
-                selectedAnswer: answer,
-                isCorrect: question.answers[0] === answer
-            })
+        timeouts.current.push(setTimeout(() => {
+            const isCorrect = !!selected.isCorrect;
+            setAnswer({ selectedAnswer: selected, isCorrect });
 
-            setTimeout(() => {
-                onSelectAnswer(answer)
-            }, 2000);
-        }, 1000);
+            timeouts.current.push(setTimeout(() => onSelectAnswer(selected), 2000));
+        }, 1000));
     }
 
     let answerState = '';

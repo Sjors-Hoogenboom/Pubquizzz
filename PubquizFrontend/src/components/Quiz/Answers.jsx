@@ -4,32 +4,49 @@ export default function Answers({answers, selectedAnswer, answerState, onSelect}
     const shuffledAnswers = useRef();
 
     if (!shuffledAnswers.current) {
-        shuffledAnswers.current = [...answers];
-        shuffledAnswers.current.sort(() => Math.random() - 0.5);
+        shuffledAnswers.current = answers
+            .map(a => ({
+                id: a.answerOptionId ?? a.id ?? a.text,
+                text: a.text ?? a,
+                isCorrect: !!a.isCorrect,
+                raw: a
+            }))
+            .sort(() => Math.random() - 0.5);
     }
 
     return (
         <ul id="answers">
-            {shuffledAnswers.current.map((answer) => {
-                    const isSelected = selectedAnswer === answer;
-                    let cssClass = '';
+            {shuffledAnswers.current.map((a) => {
+                const isSelected =
+                    selectedAnswer &&
+                    (
+                        (selectedAnswer.answerOptionId ?? selectedAnswer.id ?? selectedAnswer.text)
+                        === a.id
+                    );
 
-                    if (answerState === 'answered' && isSelected) {
-                        cssClass += ' selected';
-                    } else if (answerState === 'correct' || answerState === 'wrong' && isSelected) {
-                        cssClass += answerState;
-                    }
+                let cssClass = "";
 
-                    return <li key={answer} className="answer">
-                        <button onClick={() => onSelect(answer)}
-                                className={cssClass}
-                                disabled={answerState !== ''}
+                if (answerState === "answered" && isSelected) {
+                    cssClass += " selected";
+                } else if (
+                    (answerState === "correct" || answerState === "wrong") &&
+                    isSelected
+                ) {
+                    cssClass += answerState;
+                }
+
+                return (
+                    <li key={a.id} className="answer">
+                        <button
+                            onClick={() => onSelect(a.raw)}
+                            className={cssClass}
+                            disabled={answerState !== ""}
                         >
-                            {answer}
+                            {a.text}
                         </button>
                     </li>
-                }
-            )}
+                );
+            })}
         </ul>
-    )
+    );
 }

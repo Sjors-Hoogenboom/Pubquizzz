@@ -17,9 +17,10 @@ export default function Quiz() {
 
     const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
         setUserAnswers((prevUserAnswers) => {
+            if (prevUserAnswers.length >= totalQuestions) return prevUserAnswers;
             return [...prevUserAnswers, selectedAnswer];
         });
-    }, [])
+    }, [totalQuestions])
     const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer])
 
     useEffect(() => {
@@ -52,6 +53,11 @@ export default function Quiz() {
         return <p>Loading...</p>;
     }
 
+    const questions = quiz.questions ?? [];
+    if (questions.length === 0) {
+        return <ErrorPage title="No questions" message="This quiz doesn't have any questions yet." />;
+    }
+
     if (quizIsComplete) {
         return (
             <Summary userAnswers={userAnswers} />
@@ -59,13 +65,14 @@ export default function Quiz() {
     }
 
     const question = quiz.questions[activeQuestionIndex];
+    const isLast = activeQuestionIndex === questions.length - 1;
 
     return (
         <div>
             <Question
                 key={activeQuestionIndex}
                 index={activeQuestionIndex}
-                question={question}
+                question={{ ...question, isLast }}
                 onSelectAnswer={handleSelectAnswer}
                 onSkipAnswer={handleSkipAnswer}
             />

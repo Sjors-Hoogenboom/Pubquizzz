@@ -14,9 +14,8 @@ public static class QuizMappers
                 var q = pq.Question;
                 
                 var answers = q.AnswerOptions
-                    .OrderByDescending(a => a.IsCorrect)
-                    .ThenBy(a => a.AnswerOptionId)
-                    .Select(a => a.Text)
+                    .OrderBy(a => a.AnswerOptionId)
+                    .Select(a => new AnswerDto(a.AnswerOptionId, a.Text, a.IsCorrect))
                     .ToList()
                     .AsReadOnly();
 

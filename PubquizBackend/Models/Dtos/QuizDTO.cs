@@ -13,5 +13,11 @@ public record QuestionDto(
     string? Description,
     int Points,
     int TimeLimit,
-    IReadOnlyList<string> Answers // index 0 == correct
+    IReadOnlyList<AnswerDto> Answers
+);
+
+public record AnswerDto(
+    Guid AnswerOptionId,
+    string Text,
+    bool IsCorrect
 );
