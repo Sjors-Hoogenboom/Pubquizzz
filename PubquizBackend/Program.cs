@@ -1,9 +1,28 @@
+using System.Text;
+using dotenv.net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PubquizBackend;
 using PubquizBackend.Configuration;
 using PubquizBackend.Data;
 
+DotEnv.Load(new DotEnvOptions(
+    envFilePaths: [".env.local", ".env"],
+    probeForEnv: true,
+    overwriteExistingVars: false
+));
+
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtSection = builder.Configuration.GetSection("jwt");
+var issuer = jwtSection["issuer"];
+var audience = jwtSection["audience"];
+var key      = builder.Configuration["jwt:key"];
+
+byte[] keyBytes;
+try { keyBytes = Convert.FromBase64String(key); }
+catch (FormatException) { keyBytes = Encoding.UTF8.GetBytes(key); }
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,6 +45,25 @@ builder.Services.AddRepositories();
 builder.Services.AddDbContext<PubquizDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("PubquizConnectionString")));
 
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -37,6 +75,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
