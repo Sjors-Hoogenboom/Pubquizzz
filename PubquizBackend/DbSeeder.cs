@@ -1,12 +1,69 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PubquizBackend.Data;
 using PubquizBackend.Models.Entities;
+using Microsoft.AspNetCore.Identity; 
 
 namespace PubquizBackend;
 
 public static class DbSeeder
 {
     public static async Task SeedAsync(PubquizDbContext db)
+    {
+        await SeedUsersAsync(db);
+        await SeedQuizAsync(db);
+    }
+    
+    private static async Task SeedUsersAsync(PubquizDbContext db)
+    {
+        if (await db.Users.AnyAsync()) return;
+
+        var hasher = new PasswordHasher<User>();
+
+        var user = new User
+        {
+            UserId = Guid.NewGuid(),
+            DisplayName = "Player One",
+            Email = "user@email.com",
+            CreationDate = DateTime.UtcNow
+        };
+        user.PasswordHash = hasher.HashPassword(user, "User!123");
+        user.Roles.Add(new UserRole { UserId = user.UserId, Role = Role.User, User = user });
+
+        var admin = new User
+        {
+            UserId = Guid.NewGuid(),
+            DisplayName = "Admin",
+            Email = "admin@email.com",
+            CreationDate = DateTime.UtcNow
+        };
+        admin.PasswordHash = hasher.HashPassword(admin, "Admin!123");
+        admin.Roles.Add(new UserRole { UserId = admin.UserId, Role = Role.Admin, User = admin });
+
+        var host = new User
+        {
+            UserId = Guid.NewGuid(),
+            DisplayName = "Host Creator",
+            Email = "host@email.com",
+            CreationDate = DateTime.UtcNow
+        };
+        host.PasswordHash = hasher.HashPassword(host, "HostCreator!123");
+        host.Roles.Add(new UserRole { UserId = host.UserId, Role = Role.Host, User = host });
+        
+        var creator = new User
+        {
+            UserId = Guid.NewGuid(),
+            DisplayName = "Admin",
+            Email = "creator@email.com",
+            CreationDate = DateTime.UtcNow
+        };
+        creator.PasswordHash = hasher.HashPassword(creator, "Creator!123");
+        creator.Roles.Add(new UserRole { UserId = creator.UserId, Role = Role.Creator, User = creator });
+
+        db.Users.AddRange(user, admin, host, creator);
+        await db.SaveChangesAsync();
+    }
+    
+     private static async Task SeedQuizAsync(PubquizDbContext db)
     {
         if (await db.Pubquizes.AnyAsync()) return;
 
