@@ -4,6 +4,7 @@ import './Quiz.css'
 import Summary from './Summary.jsx'
 import ErrorPage from '../Error/Error.jsx'
 import { fetchQuizApi } from '../../api/http.jsx'
+import quizCompleteImg from "../../assets/rinkoShirokane.png";
 
 export default function Quiz() {
     const [quiz, setQuiz] = useState(null)
@@ -22,6 +23,12 @@ export default function Quiz() {
         });
     }, [totalQuestions])
     const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer])
+
+    useEffect(() => {
+        const img = new Image();
+        img.src = quizCompleteImg;
+        return () => { img.src = ""; };
+    }, []);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -59,9 +66,8 @@ export default function Quiz() {
     }
 
     if (quizIsComplete) {
-        return (
-            <Summary userAnswers={userAnswers} />
-        )
+        return <Summary userAnswers={userAnswers} />
+
     }
 
     const question = quiz.questions[activeQuestionIndex];
