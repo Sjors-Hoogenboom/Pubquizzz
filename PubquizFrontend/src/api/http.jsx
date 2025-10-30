@@ -1,6 +1,6 @@
 export async function fetchQuizApi({ signal } = {}) {
     const BASE = import.meta.env.VITE_API_BASE ?? "";
-    const response = await fetch(`${BASE}/latest`, { signal });
+    const response = await fetch(`${BASE}/api/v1/Pubquiz/latest`, { signal });
 
     if (!response.ok) {
         const text = await response.text().catch(() => "");

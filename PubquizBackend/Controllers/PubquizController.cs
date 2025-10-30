@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PubquizBackend.Data;
 using PubquizBackend.Models.Dtos;
 using PubquizBackend.Models.Helpers;
+using PubquizBackend.Service;
 
 namespace PubquizBackend.Controllers;
 
@@ -10,43 +11,30 @@ namespace PubquizBackend.Controllers;
 [ApiController]
 public class PubquizController : ControllerBase
 {
-    private readonly PubquizDbContext _dbContext;
+    private readonly IPubquizService _service;
 
-    public PubquizController(PubquizDbContext dbContext)
+    public PubquizController(IPubquizService service)
     {
-        _dbContext = dbContext;
+        _service = service;
     }
     
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<QuizDto>> GetFullQuiz(Guid id)
+    [ProducesResponseType(typeof(QuizDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<QuizDto>> GetFullQuiz(Guid id, CancellationToken ct)
     {
-        var quiz = await _dbContext.Pubquizes
-            .AsNoTracking()
-            .Where(p => p.PubquizId == id && p.IsPublished)
-            .Include(p => p.PubquizQuestions)
-            .ThenInclude(pq => pq.Question)
-            .ThenInclude(q => q.AnswerOptions)
-            .FirstOrDefaultAsync();
-
-        if (quiz is null) return NotFound();
-        
-        return Ok(quiz.ToDto());
+        var dto = await _service.GetFullQuizAsync(id, ct);
+        if (dto is null) return NotFound();
+        return Ok(dto);
     }
 
-    [HttpGet("/latest")]
-    public async Task<ActionResult<QuizDto>> GetLatestPublishedQuiz()
+    [HttpGet("latest")]
+    [ProducesResponseType(typeof(QuizDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<QuizDto>> GetLatestPublishedQuiz(CancellationToken ct)
     {
-        var quiz = await _dbContext.Pubquizes
-            .AsNoTracking()
-            .Where(p => p.IsPublished)
-            .OrderByDescending(p => p.CreationDate)
-            .Include(p => p.PubquizQuestions)
-            .ThenInclude(pq => pq.Question)
-            .ThenInclude(q => q.AnswerOptions)
-            .FirstOrDefaultAsync();
-
-        if (quiz is null) return NotFound();
-
-        return Ok(quiz.ToDto());
+        var dto = await _service.GetLatestPublishedQuizAsync(ct);
+        if (dto is null) return NotFound();
+        return Ok(dto);
     }
 }

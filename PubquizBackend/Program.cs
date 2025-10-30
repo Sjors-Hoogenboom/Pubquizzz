@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PubquizBackend;
+using PubquizBackend.Configuration;
 using PubquizBackend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,9 @@ builder.Services.AddCors(opt =>
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
+
+builder.Services.AddServices();
+builder.Services.AddRepositories();
 
 builder.Services.AddDbContext<PubquizDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("PubquizConnectionString")));
