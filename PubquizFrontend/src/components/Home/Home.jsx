@@ -1,8 +1,6 @@
 import { useRef } from "react"
-import Navbar from "@/components/Layout/Navbar"
 import Hero from "@/components/Home/Hero"
 import Features from "@/components/Home/Features"
-import Footer from "@/components/Layout/Footer"
 
 export default function Home() {
     const featuresRef = useRef(null)
@@ -14,12 +12,8 @@ export default function Home() {
 
     return (
         <>
-            <Navbar />
-            <main className="pt-14">
-                <Hero onViewFeatures={handleViewFeatures} />
-                <Features />
-            </main>
-            <Footer />
+            <Hero onViewFeatures={handleViewFeatures} />
+            <Features ref={featuresRef} />
         </>
     )
 }

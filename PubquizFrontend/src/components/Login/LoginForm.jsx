@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Link } from "react-router-dom"
 
 export default function LoginForm() {
     const [email, setEmail] = useState("")
@@ -25,9 +26,9 @@ export default function LoginForm() {
                     <h1 className="text-xl font-bold">Welcome to Pubquizzz</h1>
                     <p className="text-sm text-muted-foreground">
                         Don&apos;t have an account?{" "}
-                        <a href="/signup" className="underline underline-offset-4 hover:text-foreground">
+                        <Link to="/signup" className="underline underline-offset-4 hover:text-foreground">
                             Sign up
-                        </a>
+                        </Link>
                     </p>
                 </div>
 
