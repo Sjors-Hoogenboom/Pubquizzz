@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PubquizBackend.Data;
 using PubquizBackend.Models.Dtos;
-using PubquizBackend.Models.Helpers;
 using PubquizBackend.Service;
 
 namespace PubquizBackend.Controllers;
 
-[Route("api/v1/[controller]")]
 [ApiController]
+[Route("api/v1/[controller]")]
 public class PubquizController : ControllerBase
 {
     private readonly IPubquizService _service;

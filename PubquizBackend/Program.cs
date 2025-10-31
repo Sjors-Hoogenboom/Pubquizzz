@@ -1,15 +1,17 @@
 using System.Text;
 using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PubquizBackend;
 using PubquizBackend.Configuration;
 using PubquizBackend.Data;
+using PubquizBackend.Models.Entities;
+using PubquizBackend.Service;
 
 DotEnv.Load(new DotEnvOptions(
     envFilePaths: [".env.local", ".env"],
-    probeForEnv: true,
     overwriteExistingVars: false
 ));
 
@@ -47,9 +49,9 @@ builder.Services.AddDbContext<PubquizDbContext>(options =>
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(o =>
+    .AddJwtBearer(options =>
     {
-        o.TokenValidationParameters = new TokenValidationParameters
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -63,6 +65,9 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();
 

@@ -42,7 +42,7 @@ public static class DbSeeder
         var host = new User
         {
             UserId = Guid.NewGuid(),
-            DisplayName = "Host Creator",
+            DisplayName = "Host",
             Email = "host@email.com",
             CreationDate = DateTime.UtcNow
         };
@@ -52,7 +52,7 @@ public static class DbSeeder
         var creator = new User
         {
             UserId = Guid.NewGuid(),
-            DisplayName = "Admin",
+            DisplayName = "Creator",
             Email = "creator@email.com",
             CreationDate = DateTime.UtcNow
         };

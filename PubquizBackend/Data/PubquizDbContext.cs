@@ -42,6 +42,26 @@ public class PubquizDbContext : DbContext
             .HasOne(a => a.Question)
             .WithMany(q => q.AnswerOptions)
             .HasForeignKey(a => a.QuestionId);
+        
+        modelBuilder.Entity<User>(b =>
+        {
+            b.HasKey(u => u.UserId);
+            b.Property(u => u.DisplayName).IsRequired().HasMaxLength(128);
+            b.Property(u => u.Email).IsRequired().HasMaxLength(256);
+            b.HasIndex(u => u.Email).IsUnique();
+            b.Property(u => u.PasswordHash).IsRequired().HasMaxLength(512);
+            b.Property(u => u.CreationDate).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<UserRole>(b =>
+        {
+            b.HasKey(ur => new { ur.UserId, ur.Role });
+            b.Property(ur => ur.Role).HasConversion<string>().HasMaxLength(32);
+            b.HasOne(ur => ur.User)
+                .WithMany(u => u.Roles)
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
     
     public PubquizDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
