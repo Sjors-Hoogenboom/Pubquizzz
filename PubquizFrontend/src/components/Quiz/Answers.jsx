@@ -1,4 +1,5 @@
 import {useRef} from "react";
+import {Button} from "@/components/ui/button.jsx";
 
 export default function Answers({answers, selectedAnswer, answerState, onSelect}) {
     const shuffledAnswers = useRef();
@@ -37,13 +38,15 @@ export default function Answers({answers, selectedAnswer, answerState, onSelect}
 
                 return (
                     <li key={a.id} className="answer">
-                        <button
+                        <Button
+                            variant="outline"
+                            size="m"
                             onClick={() => onSelect(a.raw)}
                             className={cssClass}
                             disabled={answerState !== ""}
                         >
                             {a.text}
-                        </button>
+                        </Button>
                     </li>
                 );
             })}
