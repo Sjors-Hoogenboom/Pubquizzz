@@ -40,7 +40,7 @@ export default function Answers({answers, selectedAnswer, answerState, onSelect}
                     <li key={a.id} className="answer">
                         <Button
                             variant="outline"
-                            size="m"
+                            size="lg"
                             onClick={() => onSelect(a.raw)}
                             className={cssClass}
                             disabled={answerState !== ""}
