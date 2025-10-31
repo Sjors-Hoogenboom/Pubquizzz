@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
 
-export default function Navbar({ onBrowse, onHome }) {
+export default function Navbar() {
     return (
         <header className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/50">
             <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
                 <div className="flex items-center gap-5">
                     <button
-                        onClick={onHome}
+                        onClick={() => navigate("/")}
                         className="rounded-md p-1 ring-offset-background transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         aria-label="Go to home"
                     >
@@ -14,7 +15,7 @@ export default function Navbar({ onBrowse, onHome }) {
                     </button>
 
                     <button
-                        onClick={onBrowse}
+                        onClick={() => navigate("/quizzes/browse")}
                         className="group inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-semibold text-foreground/90 ring-offset-background transition hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                         Browse quizzes
@@ -32,8 +33,12 @@ export default function Navbar({ onBrowse, onHome }) {
                             <img src="/github.svg" alt="" className="h-5 w-5" />
                         </a>
                     </Button>
-                    <Button variant="ghost" size="sm">Sign in</Button>
-                    <Button size="sm">Sign up</Button>
+                    <Button variant="ghost" size="sm" asChild>
+                        <Link to="/login">Sign in</Link>
+                    </Button>
+                    <Button size="sm" asChild>
+                        <Link to="/login">Sign up</Link>
+                    </Button>
                 </div>
             </nav>
         </header>

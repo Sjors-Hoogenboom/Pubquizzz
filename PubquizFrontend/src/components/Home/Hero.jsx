@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
 
-export default function Hero({ onViewFeatures, onBrowse }) {
+export default function Hero({ onViewFeatures }) {
     return (
         <section className="relative mx-auto flex min-h-[60svh] w-full max-w-6xl flex-col items-center justify-center px-4 text-center">
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">Pubquizzz maker</h1>
@@ -9,7 +10,9 @@ export default function Hero({ onViewFeatures, onBrowse }) {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Button size="lg" onClick={onBrowse}>Get started</Button>
+                <Button size="lg" asChild>
+                    <Link to="/quizzes/browse">Get started</Link>
+                </Button>
                 <Button variant="outline" size="lg" onClick={onViewFeatures}>
                     View features
                 </Button>

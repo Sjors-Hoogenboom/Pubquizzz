@@ -12,15 +12,12 @@ export default function Home() {
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
     }
 
-    const goToBrowse = () => (window.location.href = "/quizzes/browse")
-    const goHome = () => (window.location.href = "/")
-
     return (
         <>
-            <Navbar onBrowse={goToBrowse} onHome={goHome} />
+            <Navbar />
             <main className="pt-14">
-                <Hero onViewFeatures={handleViewFeatures} onBrowse={goToBrowse} />
-                <Features ref={featuresRef} onBrowse={goToBrowse} />
+                <Hero onViewFeatures={handleViewFeatures} />
+                <Features />
             </main>
             <Footer />
         </>
