@@ -2,9 +2,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link } from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
+import {registerApi} from "@/api/http.jsx";
 
 export default function SignupForm() {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: "",
         username: "",
@@ -12,13 +14,14 @@ export default function SignupForm() {
         confirm: "",
     })
     const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const onChange = (e) => {
         const { id, value } = e.target
         setForm((f) => ({ ...f, [id]: value }))
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault()
         setError("")
 
@@ -29,6 +32,24 @@ export default function SignupForm() {
         if (form.password !== form.confirm) {
             setError("Passwords do not match.")
             return
+        }
+
+        setLoading(true)
+        try {
+            const payload = {
+                email: form.email,
+                password: form.password,
+                displayName: form.username,
+            };
+
+            const data = await registerApi(payload);
+
+            localStorage.setItem("token", data.accessToken);
+            navigate("/login");
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
 
         console.log("Sign up:", form)

@@ -2,14 +2,34 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link } from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
+import {loginApi} from "@/api/http.jsx";
+import {useAuth} from "@/context/AuthContext.jsx";
 
 export default function LoginForm() {
+    const { login } = useAuth();
+    const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [Error, setError] = useState("")
+    const [Loading, setLoading] = useState(false)
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault()
+        setError("")
+        setLoading(true)
+
+        try {
+            const data = await loginApi({email, password})
+            login(data.accessToken);
+            navigate("/");
+        }
+        catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     return (

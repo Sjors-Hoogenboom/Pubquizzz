@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IPubquizService, PubquizService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)

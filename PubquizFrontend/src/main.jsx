@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
+import { AuthProvider } from "@/context/AuthContext"
 import AppLayout from "./AppLayout"
 import Home from "@/components/Home/Home"
 import LoginPage from "@/components/Login/Login"
@@ -13,15 +14,17 @@ import "@/index.css"
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <BrowserRouter>
-            <Routes>
-                <Route element={<AppLayout />}>
-                    <Route index element={<Home />} />
-                    <Route path="login" element={<LoginPage />} />
-                    <Route path="signup" element={<SignupPage />} />
-                    <Route path="quizzes/browse" element={<Browse />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Route>
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route element={<AppLayout/>}>
+                        <Route index element={<Home/>}/>
+                        <Route path="login" element={<LoginPage/>}/>
+                        <Route path="signup" element={<SignupPage/>}/>
+                        <Route path="quizzes/browse" element={<Browse/>}/>
+                        <Route path="*" element={<Navigate to="/" replace/>}/>
+                    </Route>
+                </Routes>
+            </AuthProvider>
         </BrowserRouter>
     </React.StrictMode>
 )
