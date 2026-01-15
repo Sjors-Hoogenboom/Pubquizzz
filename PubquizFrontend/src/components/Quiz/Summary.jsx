@@ -1,6 +1,6 @@
 import quizCompleteImg from '../../assets/rinkoShirokane.png'
 
-export default function Summary({ userAnswers }) {
+export default function Summary({userAnswers}) {
     const skippedAnswers = userAnswers.filter(a => a === null);
     const answeredAnswers = userAnswers.filter(a => a !== null);
 
@@ -18,7 +18,7 @@ export default function Summary({ userAnswers }) {
 
     return (
         <div>
-            <img src={quizCompleteImg} alt="quiz completed image" />
+            <img src={quizCompleteImg} alt="quiz completed image"/>
             <h2>Quiz completed</h2>
             <div>
                 <p>

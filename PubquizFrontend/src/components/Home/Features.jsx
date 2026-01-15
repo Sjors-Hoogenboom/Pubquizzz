@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function Features({ onBrowse }) {
+export default function Features() {
     return (
         <section id="features" className="mx-auto w-full max-w-6xl px-4 pb-24 pt-16">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

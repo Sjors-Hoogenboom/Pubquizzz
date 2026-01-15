@@ -1,13 +1,13 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {useState} from "react"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
 import {Link, useNavigate} from "react-router-dom"
 import {loginApi} from "@/api/http.jsx";
 import {useAuth} from "@/context/AuthContext.jsx";
 
 export default function LoginForm() {
-    const { login } = useAuth();
+    const {login} = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -23,11 +23,9 @@ export default function LoginForm() {
             const data = await loginApi({email, password})
             login(data.accessToken);
             navigate("/");
-        }
-        catch (error) {
+        } catch (error) {
             setError(error.message);
-        }
-        finally {
+        } finally {
             setLoading(false)
         }
     }

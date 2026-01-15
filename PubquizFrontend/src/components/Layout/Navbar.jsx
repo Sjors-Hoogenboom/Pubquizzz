@@ -1,13 +1,14 @@
-import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
+import {Button} from "@/components/ui/button"
+import {Link} from "react-router-dom"
 import {useAuth} from "@/context/AuthContext.jsx";
 import {UserNav} from "@/components/Layout/UserNav.jsx";
 
 export default function Navbar() {
-    const { token } = useAuth();
+    const {token} = useAuth();
 
     return (
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/50">
+        <header
+            className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/50">
             <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
                 <div className="flex items-center gap-5">
                     <Link

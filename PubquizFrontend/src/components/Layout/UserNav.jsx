@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
+import {Button} from "@/components/ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,10 +8,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/context/AuthContext"
+import {useAuth} from "@/context/AuthContext"
 
 export function UserNav() {
-    const { logout, user } = useAuth();
+    const {logout, user} = useAuth();
 
     const getInitials = (name) => {
         if (!name) return "U";
@@ -21,7 +21,7 @@ export function UserNav() {
             .map((n) => n[0])
             .join("")
             .toUpperCase()
-            .substring(0,2);
+            .substring(0, 2);
     };
 
     const displayName = user?.displayName || "User";
@@ -32,7 +32,7 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src="" alt="@user" />
+                        <AvatarImage src="" alt="@user"/>
                         <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                 </Button>
@@ -46,7 +46,7 @@ export function UserNav() {
                         </p>
                     </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem onClick={logout} className="cursor-pointer">
                     Log out
                 </DropdownMenuItem>

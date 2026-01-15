@@ -3,7 +3,7 @@ import Question from './Question.jsx'
 import './Quiz.css'
 import Summary from './Summary.jsx'
 import ErrorPage from '../Error/Error.jsx'
-import { fetchQuizApi } from '../../api/http.jsx'
+import {fetchQuizApi} from '../../api/http.jsx'
 import quizCompleteImg from "../../assets/rinkoShirokane.png";
 
 export default function Quiz() {
@@ -27,7 +27,9 @@ export default function Quiz() {
     useEffect(() => {
         const img = new Image();
         img.src = quizCompleteImg;
-        return () => { img.src = ""; };
+        return () => {
+            img.src = "";
+        };
     }, []);
 
     useEffect(() => {
@@ -37,15 +39,13 @@ export default function Quiz() {
             setIsFetching(true);
 
             try {
-                const data = await fetchQuizApi({ signal: abortController.signal });
+                const data = await fetchQuizApi({signal: abortController.signal});
                 setQuiz(data)
-            }
-            catch (error) {
+            } catch (error) {
                 if (error.name !== "AbortError") {
                     setError({message: error.message || 'Could not fetch quiz'});
                 }
-            }
-            finally {
+            } finally {
                 setIsFetching(false);
             }
         })();
@@ -53,7 +53,7 @@ export default function Quiz() {
     }, []);
 
     if (error) {
-        return <ErrorPage title="An error occurred" message={error.message ?? String(error)} />;
+        return <ErrorPage title="An error occurred" message={error.message ?? String(error)}/>;
     }
 
     if (isFetching || !quiz) {
@@ -62,11 +62,11 @@ export default function Quiz() {
 
     const questions = quiz.questions ?? [];
     if (questions.length === 0) {
-        return <ErrorPage title="No questions" message="This quiz doesn't have any questions yet." />;
+        return <ErrorPage title="No questions" message="This quiz doesn't have any questions yet."/>;
     }
 
     if (quizIsComplete) {
-        return <Summary userAnswers={userAnswers} />
+        return <Summary userAnswers={userAnswers}/>
 
     }
 
@@ -78,7 +78,7 @@ export default function Quiz() {
             <Question
                 key={activeQuestionIndex}
                 index={activeQuestionIndex}
-                question={{ ...question, isLast }}
+                question={{...question, isLast}}
                 onSelectAnswer={handleSelectAnswer}
                 onSkipAnswer={handleSkipAnswer}
             />

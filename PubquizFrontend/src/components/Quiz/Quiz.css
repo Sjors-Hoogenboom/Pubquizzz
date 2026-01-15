@@ -4,10 +4,18 @@
     --quiz-red: #dc2626;
 }
 
-.question-text{
+.question-text {
     transition: color 240ms ease-in-out;
 }
 
-.question-text.answered{ color: var(--quiz-orange); }
-.question-text.correct { color: var(--quiz-green); }
-.question-text.wrong   { color: var(--quiz-red); }
+.question-text.answered {
+    color: var(--quiz-orange);
+}
+
+.question-text.correct {
+    color: var(--quiz-green);
+}
+
+.question-text.wrong {
+    color: var(--quiz-red);
+}

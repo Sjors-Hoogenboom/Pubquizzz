@@ -1,7 +1,7 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {useState} from "react"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
 import {Link, useNavigate} from "react-router-dom"
 import {registerApi} from "@/api/http.jsx";
 
@@ -17,8 +17,8 @@ export default function SignupForm() {
     const [loading, setLoading] = useState(false)
 
     const onChange = (e) => {
-        const { id, value } = e.target
-        setForm((f) => ({ ...f, [id]: value }))
+        const {id, value} = e.target
+        setForm((f) => ({...f, [id]: value}))
     }
 
     const onSubmit = async (e) => {

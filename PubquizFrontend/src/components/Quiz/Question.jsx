@@ -1,6 +1,6 @@
 import QuestionTimer from "@/components/Quiz/QuestionTimer.jsx";
 import Answers from "@/components/Quiz/Answers.jsx";
-import { useState, useRef } from "react";
+import {useState, useRef} from "react";
 
 export default function Question({
                                      index,
@@ -33,7 +33,7 @@ export default function Question({
 
         timeouts.current.push(setTimeout(() => {
             const isCorrect = !!selected.isCorrect;
-            setAnswer({ selectedAnswer: selected, isCorrect });
+            setAnswer({selectedAnswer: selected, isCorrect});
 
             timeouts.current.push(setTimeout(() => onSelectAnswer(selected), 2000));
         }, 1000));
