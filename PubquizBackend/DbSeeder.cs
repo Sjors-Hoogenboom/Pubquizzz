@@ -65,7 +65,7 @@ public static class DbSeeder
     
      private static async Task SeedQuizAsync(PubquizDbContext db)
     {
-        if (await db.Pubquizes.AnyAsync()) return;
+        if (await db.Pubquizzes.AnyAsync()) return;
 
         var quizId = Guid.NewGuid();
         var q1Id = Guid.NewGuid();
@@ -121,7 +121,7 @@ public static class DbSeeder
         };
 
         db.Questions.AddRange(q1, q2);
-        db.Pubquizes.Add(quiz);
+        db.Pubquizzes.Add(quiz);
         await db.SaveChangesAsync();
     }
 }

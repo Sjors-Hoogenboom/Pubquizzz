@@ -18,5 +18,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IPubquizRepository, PubquizRepository>();
         services.AddScoped<IAuthRepository, AuthRepository>();
+        services.AddScoped<IGameRepository, GameRepository>();
     }
 }
