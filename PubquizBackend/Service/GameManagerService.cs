@@ -7,7 +7,7 @@ public class GameManagerService : IGameManagerService
 {
     private readonly ConcurrentDictionary<string, activeLobby> _games = new();
 
-    public Task<string> CreateGameAsync(Guid hostId, Guid quizId)
+    public Task<string> CreateGameAsync(Guid hostId, QuizDto quizData)
     {
         string code;
         do
@@ -19,6 +19,7 @@ public class GameManagerService : IGameManagerService
         {
             Code = code,
             HostId = hostId,
+            QuizData = quizData
         };
         
         _games.TryAdd(code, lobby);

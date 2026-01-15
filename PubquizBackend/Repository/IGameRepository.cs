@@ -6,4 +6,5 @@ public interface IGameRepository
 {
     Task AddGameSessionAsync(GameSession gameSession);
     Task SaveChangesAsync();
+    Task <Pubquiz?> GetQuizWithQuestionsAsync(Guid quizId);
 }

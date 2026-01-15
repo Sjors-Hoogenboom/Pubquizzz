@@ -29,9 +29,9 @@ public class GameController : ControllerBase
         var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!Guid.TryParse(userIdStr, out var hostId)) return Unauthorized();
         
-        var code = await _gameManagerService.CreateGameAsync(hostId, quizId);
+        var quizData = await _gameService.GetQuizAsync(quizId);
         
-        await _gameService.CreateGameSessionAsync(hostId, quizId,code);
+        var code = await _gameManagerService.CreateGameAsync(hostId, quizData);
 
         return Created("", new GameDTO
         {

@@ -25,7 +25,7 @@ public sealed class PubquizRepository : IPubquizRepository
     }
     
     private IQueryable<Pubquiz> BaseQuery() =>
-        _db.Pubquizes
+        _db.Pubquizzes
             .AsNoTracking()
             .AsSplitQuery() // safer for big include graphs
             .Include(p => p.PubquizQuestions)

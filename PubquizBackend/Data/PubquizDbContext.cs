@@ -5,7 +5,7 @@ namespace PubquizBackend.Data;
 
 public class PubquizDbContext : DbContext
 {
-    public DbSet<Pubquiz> Pubquizes { get; set; } = default!;
+    public DbSet<Pubquiz> Pubquizzes { get; set; } = default!;
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<UserRole> UserRoles { get; set; } = default!;
     public DbSet<GameSession> GameSessions { get; set; } = default!;
