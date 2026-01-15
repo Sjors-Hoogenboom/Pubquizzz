@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using PubquizBackend;
 using PubquizBackend.Configuration;
 using PubquizBackend.Data;
+using PubquizBackend.Hubs;
 using PubquizBackend.Models.Entities;
 using PubquizBackend.Service;
 
@@ -29,6 +30,7 @@ catch (FormatException) { keyBytes = Encoding.UTF8.GetBytes(key); }
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(opt =>
 {
@@ -38,7 +40,8 @@ builder.Services.AddCors(opt =>
             "http://localhost:3000", "http://127.0.0.1:3000"
         )
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 builder.Services.AddServices();
@@ -85,6 +88,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<GameHub>("/gameRoom");
 
 using (var scope = app.Services.CreateScope())
 {
