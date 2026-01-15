@@ -8,7 +8,7 @@ public class PubquizDbContext : DbContext
     public DbSet<Pubquiz> Pubquizes { get; set; } = default!;
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<UserRole> UserRoles { get; set; } = default!;
-    public DbSet<Game> Games { get; set; } = default!;
+    public DbSet<GameSession> GameSessions { get; set; } = default!;
     public DbSet<GameParticipant> GameParticipants { get; set; } = default!;
     public DbSet<Question> Questions { get; set; } = default!;
     

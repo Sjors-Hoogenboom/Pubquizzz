@@ -6,6 +6,6 @@ public class GameParticipant
     public Guid UserId { get; set; }
     public DateTime JoinedAt { get; set; }
     
-    public Game Game { get; set; }
+    public GameSession GameSession { get; set; }
     public User User { get; set; }
 }

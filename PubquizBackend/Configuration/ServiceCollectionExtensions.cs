@@ -10,7 +10,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPubquizService, PubquizService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IGameManagerService, GameManagerService>();
+        services.AddSingleton<IGameManagerService, GameManagerService>();
+        services.AddScoped<IGameService, GameService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)
