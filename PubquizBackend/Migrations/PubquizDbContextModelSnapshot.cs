@@ -45,32 +45,6 @@ namespace PubquizBackend.Migrations
                     b.ToTable("AnswerOptions");
                 });
 
-            modelBuilder.Entity("PubquizBackend.Models.Entities.Game", b =>
-                {
-                    b.Property<Guid>("GameId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("FinishedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GameStatus")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("HostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PubquizId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("GameId");
-
-                    b.ToTable("Games");
-                });
-
             modelBuilder.Entity("PubquizBackend.Models.Entities.GameParticipant", b =>
                 {
                     b.Property<Guid>("GameId")
@@ -87,6 +61,37 @@ namespace PubquizBackend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("GameParticipants");
+                });
+
+            modelBuilder.Entity("PubquizBackend.Models.Entities.GameSession", b =>
+                {
+                    b.Property<Guid>("SessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PubquizId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RoomCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int");
+
+                    b.HasKey("SessionId");
+
+                    b.HasIndex("HostId");
+
+                    b.HasIndex("PubquizId");
+
+                    b.ToTable("GameSessions");
                 });
 
             modelBuilder.Entity("PubquizBackend.Models.Entities.Pubquiz", b =>
@@ -113,7 +118,7 @@ namespace PubquizBackend.Migrations
 
                     b.HasKey("PubquizId");
 
-                    b.ToTable("Pubquizes");
+                    b.ToTable("Pubquizzes");
                 });
 
             modelBuilder.Entity("PubquizBackend.Models.Entities.PubquizQuestion", b =>
@@ -228,21 +233,40 @@ namespace PubquizBackend.Migrations
 
             modelBuilder.Entity("PubquizBackend.Models.Entities.GameParticipant", b =>
                 {
-                    b.HasOne("PubquizBackend.Models.Entities.Game", "Game")
+                    b.HasOne("PubquizBackend.Models.Entities.GameSession", "GameSession")
                         .WithMany()
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PubquizBackend.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GameSession");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PubquizBackend.Models.Entities.GameSession", b =>
+                {
+                    b.HasOne("PubquizBackend.Models.Entities.User", "Host")
+                        .WithMany()
+                        .HasForeignKey("HostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Game");
+                    b.HasOne("PubquizBackend.Models.Entities.Pubquiz", "Pubquiz")
+                        .WithMany()
+                        .HasForeignKey("PubquizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Host");
+
+                    b.Navigation("Pubquiz");
                 });
 
             modelBuilder.Entity("PubquizBackend.Models.Entities.PubquizQuestion", b =>

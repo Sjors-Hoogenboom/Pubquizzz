@@ -19,8 +19,19 @@ public class PubquizDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<GameParticipant>()
-            .HasKey(gp => new { gp.GameId, gp.UserId });
+        modelBuilder.Entity<GameParticipant>(entity =>
+        {
+            entity.HasKey(p => new { p.GameId, p.UserId });
+            entity.HasOne(gp => gp.GameSession)
+                .WithMany()
+                .HasForeignKey(gp => gp.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(gp => gp.User)
+                .WithMany()
+                .HasForeignKey(gp => gp.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
 
         modelBuilder.Entity<UserRole>()
             .HasKey(ur => new { ur.UserId, ur.Role });
