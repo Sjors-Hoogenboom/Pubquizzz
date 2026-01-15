@@ -92,7 +92,7 @@ export default function SignupForm() {
                     <Input
                         id="username"
                         type="text"
-                        placeholder="yourname"
+                        placeholder="username"
                         required
                         value={form.username}
                         onChange={onChange}

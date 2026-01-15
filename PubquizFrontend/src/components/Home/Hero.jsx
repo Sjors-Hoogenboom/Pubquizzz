@@ -1,11 +1,21 @@
 import {Button} from "@/components/ui/button"
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import {useAuth} from "@/context/AuthContext.jsx";
+import {useState} from "react";
+import {Input} from "@/components/ui/input.jsx";
 
 export default function Hero({onViewFeatures}) {
     const {user} = useAuth();
+    const [joinCode, setJoinCode] = useState("");
+    const navigate = useNavigate();
 
     const name = user?.displayName;
+
+    const handleJoinQuiz = () => {
+        if (!joinCode.trim().toUpperCase()) return;
+
+        console.log("Joining", joinCode);
+    }
 
     return (
         <section
@@ -39,10 +49,36 @@ export default function Hero({onViewFeatures}) {
                 </Button>
             </div>
 
-            <div className="mt-6 w-full max-w-md">
-                <Button className="h-12 w-full text-base bg-sky-600" variant="secondary">
-                    Join quiz
-                </Button>
+            <div className="mt-6 w-full max-w-sm">
+                {user ? (
+                    <div className="flex w-full items-center space-x-2">
+                        <Input
+                            type="text"
+                            placeholder="Enter quiz code..."
+                            value={joinCode}
+                            onChange={(e) => setJoinCode(e.target.value)}
+                            className="h-12"
+                        />
+                        <Button
+                            className="h-12 bg-sky-600 hover:bg-sky-700 cursor-pointer text-white"
+                            onClick={handleJoinQuiz}
+                        >
+                            Join quiz
+                        </Button>
+                    </div>
+                ) : (
+                    <Button
+                        className="h-12 w-full text-base bg-sky-600 hover:bg-sky-700"
+                        asChild
+                    >
+                        <Link
+                            to="/login"
+                            className="!text-white hover:text-white"
+                        >
+                            Login
+                        </Link>
+                    </Button>
+                )}
             </div>
         </section>
     )
