@@ -21,4 +21,15 @@ public class PubquizService : IPubquizService
         var quiz = await _repo.GetLatestPublishedAsync(ct);
         return quiz?.ToDto();
     }
+
+    public async Task<IEnumerable<QuizSummaryDTO>> GetAllQuizesAsync(CancellationToken ct)
+    {
+        var quizzes = await _repo.GetAllPublishedAsync(ct);
+        return quizzes.Select(x => new QuizSummaryDTO(
+            x.PubquizId,
+            x.Title,
+            x.Description,
+            x.PubquizQuestions.Count
+        ));
+    }
 }

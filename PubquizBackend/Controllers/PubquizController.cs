@@ -34,4 +34,13 @@ public class PubquizController : ControllerBase
         if (dto is null) return NotFound();
         return Ok(dto);
     }
+
+    [HttpGet("all")]
+    [ProducesResponseType(typeof(IEnumerable<QuizDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<QuizDto>> GetAllPublishedQuiz(CancellationToken ct)
+    {
+        var dtos = await _service.GetAllQuizesAsync(ct);
+        return Ok(dtos);
+    }
 }

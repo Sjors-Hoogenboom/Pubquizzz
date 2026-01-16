@@ -23,6 +23,17 @@ public sealed class PubquizRepository : IPubquizRepository
             .OrderByDescending(p => p.CreationDate)
             .FirstOrDefaultAsync(ct);
     }
+
+    public async Task<IEnumerable<Pubquiz>> GetAllPublishedAsync(CancellationToken ct)
+    {
+        return await _db.Pubquizzes
+            .AsNoTracking()
+            .Where(p => p.IsPublished)
+            .Include(p => p.PubquizQuestions)
+            .OrderByDescending(p => p.CreationDate)
+            .ToListAsync(ct);
+    }
+    
     
     private IQueryable<Pubquiz> BaseQuery() =>
         _db.Pubquizzes
