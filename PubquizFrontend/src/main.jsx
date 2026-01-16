@@ -7,9 +7,9 @@ import Home from "@/components/Home/Home"
 import LoginPage from "@/components/Login/Login"
 import SignupPage from "@/components/Login/Signup"
 
-const Browse = () => <div className="p-6">Quizzes browse page</div>
-
 import "@/index.css"
+import GameLobby from "@/components/Game/GameLobby.jsx";
+import Browse from "@/components/Browse/Browse.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
@@ -20,8 +20,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                         <Route index element={<Home/>}/>
                         <Route path="login" element={<LoginPage/>}/>
                         <Route path="signup" element={<SignupPage/>}/>
-                        <Route path="quizzes/browse" element={<Browse/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
+                        <Route path="quizzes/browse" element={<Browse/>}/>
+                        <Route path="host/:code" element={<GameLobby/>}/>
+                        <Route path="play/:code" element={<div className="text-center p-10">Player Lobby: Joining...</div>}/>
                     </Route>
                 </Routes>
             </AuthProvider>

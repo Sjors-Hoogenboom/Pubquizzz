@@ -1,22 +1,29 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {fetchDisplayName} from "@/api/http.jsx";
+import {fetchDisplayNameApi} from "@/api/http.jsx";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(() => localStorage.getItem("token"));
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true);
+
         if (token) {
-            fetchDisplayName()
+            fetchDisplayNameApi()
                 .then(data => setUser(data))
                 .catch(() => {
                     logout();
                 })
+                .finally(() => {
+                    setLoading(false)
+                })
         }
         else {
             setUser(null);
+            setLoading(false);
         }
     }, [token]);
 
@@ -32,7 +39,7 @@ export function AuthProvider({ children }) {
     }
 
     return (
-        <AuthContext.Provider value={{token, user, login, logout}}>
+        <AuthContext.Provider value={{token, user, login, logout, loading}}>
             {children}
         </AuthContext.Provider>
     )

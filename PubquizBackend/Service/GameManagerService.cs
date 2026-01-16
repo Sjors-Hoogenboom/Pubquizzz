@@ -28,6 +28,11 @@ public class GameManagerService : IGameManagerService
     }
 
     public bool RoomExists(string code) => _games.ContainsKey(code.ToUpper());
+    public bool IsHost(string code, Guid userId)
+    {
+        if (!_games.TryGetValue(code.ToUpper(), out var lobby)) return false;
+        return lobby.HostId == userId;
+    }
 
     private string GenerateCode()
     {

@@ -12,9 +12,10 @@ export default function Hero({onViewFeatures}) {
     const name = user?.displayName;
 
     const handleJoinQuiz = () => {
-        if (!joinCode.trim().toUpperCase()) return;
+        const codeToUpper = joinCode.trim().toUpperCase();
+        if (!codeToUpper) return;
 
-        console.log("Joining", joinCode);
+        navigate(`/play/${codeToUpper}`);
     }
 
     return (

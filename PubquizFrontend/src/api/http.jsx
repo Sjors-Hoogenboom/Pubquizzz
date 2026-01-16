@@ -44,7 +44,7 @@ export async function registerApi(credentials) {
     return handleResponse(response);
 }
 
-export async function fetchDisplayName() {
+export async function fetchDisplayNameApi() {
     const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("No token found")
@@ -56,5 +56,26 @@ export async function fetchDisplayName() {
             "Content-Type": "application/json"
         },
     });
+    return handleResponse(response);
+}
+
+export async function createGameApi(quizId) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("No token found")
+    }
+
+    const response = await fetch(`${BASE}/api/v1/Game/create/${quizId}`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+    });
+    return handleResponse(response);
+}
+
+export async function fetchAllQuizzesApi() {
+    const response = await fetch(`${BASE}/api/v1/Pubquiz/all`);
     return handleResponse(response);
 }
