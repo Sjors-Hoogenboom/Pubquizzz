@@ -8,8 +8,9 @@ import LoginPage from "@/components/Login/Login"
 import SignupPage from "@/components/Login/Signup"
 
 import "@/index.css"
-import GameLobby from "@/components/Game/GameLobby.jsx";
+import HostLobby from "@/components/Game/HostLobby.jsx";
 import Browse from "@/components/Browse/Browse.jsx";
+import PlayerLobby from "@/components/Game/PlayerLobby.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
@@ -22,8 +23,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                         <Route path="signup" element={<SignupPage/>}/>
                         <Route path="*" element={<Navigate to="/" replace/>}/>
                         <Route path="quizzes/browse" element={<Browse/>}/>
-                        <Route path="host/:code" element={<GameLobby/>}/>
-                        <Route path="play/:code" element={<div className="text-center p-10">Player Lobby: Joining...</div>}/>
+                        <Route path="host/:code" element={<HostLobby/>}/>
+                        <Route path="play/:code" element={<PlayerLobby/>}/>
                     </Route>
                 </Routes>
             </AuthProvider>

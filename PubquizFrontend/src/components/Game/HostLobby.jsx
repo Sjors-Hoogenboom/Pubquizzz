@@ -4,7 +4,7 @@ import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 
-export default function GameLobby() {
+export default function HostLobby() {
     const { code } = useParams();
     const { user, loading } = useAuth();
     const navigate = useNavigate();
