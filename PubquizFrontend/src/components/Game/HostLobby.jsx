@@ -40,6 +40,10 @@ export default function HostLobby() {
             setPlayers(prev => [...prev, nickname]);
         });
 
+        newConnection.on("UpdatePlayerList", (playerList) => {
+            setPlayers(playerList);
+        });
+
         newConnection.on("Error", () => {
             navigate("/quizzes/browse");
         })

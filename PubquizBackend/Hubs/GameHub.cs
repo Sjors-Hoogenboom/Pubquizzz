@@ -23,9 +23,14 @@ public class GameHub : Hub
             return;
         }
         
+        bool isNewPlayer = _gameManagerService.AddPlayer(roomCode, nickname);
+        
         await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
 
-        await Clients.Group(roomCode).SendAsync("PlayerJoined", nickname);
+        if (isNewPlayer)
+        {
+            await Clients.Group(roomCode).SendAsync("PlayerJoined", nickname);
+        }
     }
 
     public async Task JoinAsHost(string roomCode)
@@ -49,5 +54,8 @@ public class GameHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
         
         await Clients.Caller.SendAsync("HostConnected");
+        
+        var currentPlayers = _gameManagerService.GetPlayers(roomCode);
+        await Clients.Caller.SendAsync("UpdatePlayerList", currentPlayers);
     }
 }
