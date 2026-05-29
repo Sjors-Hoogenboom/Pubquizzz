@@ -2,6 +2,6 @@
 
 public class LoginResponseDTO
 {
-    public string AccessToken { get; set; } = default!;
-    public DateTime ExpiresAtUtc { get; set; }
+    public string AccessToken { get; init; } = null!;
+    public DateTime ExpiresAtUtc { get; init; }
 }

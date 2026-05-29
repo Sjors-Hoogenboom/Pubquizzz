@@ -1,19 +1,17 @@
-using System.Text;
 using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using PubquizBackend;
 using PubquizBackend.Configuration;
 using PubquizBackend.Data;
 using PubquizBackend.Hubs;
 using PubquizBackend.Models.Entities;
-using PubquizBackend.Service;
 
 DotEnv.Load(new DotEnvOptions(
-    envFilePaths: [".env.local", ".env"],
+    envFilePaths: [".env"],
     overwriteExistingVars: false
 ));
 
@@ -22,14 +20,11 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtSection = builder.Configuration.GetSection("jwt");
 var issuer = jwtSection["issuer"];
 var audience = jwtSection["audience"];
-var key      = builder.Configuration["jwt:key"];
-
-byte[] keyBytes;
-try { keyBytes = Convert.FromBase64String(key); }
-catch (FormatException) { keyBytes = Encoding.UTF8.GetBytes(key); }
+var issuerSigningKey = JwtKeyHelper.GetJwtKeyBytes(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Pubquiz API", Version = "v1" });
@@ -38,27 +33,18 @@ builder.Services.AddSwaggerGen(opt =>
     {
         In = ParameterLocation.Header,
         BearerFormat = "JWT",
-        Description = "Use /login endpoint to get token",
+        Description = "Use /auth/login endpoint to get token",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         Scheme = "bearer"
     });
     
-    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    opt.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id= "Bearer"
-                }
-            },
-            []
-        }
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });
+
 builder.Services.AddSignalR();
 
 builder.Services.AddCors(opt =>
@@ -79,6 +65,20 @@ builder.Services.AddRepositories();
 builder.Services.AddDbContext<PubquizDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("PubquizConnectionString")));
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+        options.Lockout.MaxFailedAccessAttempts = 10;
+        options.Lockout.AllowedForNewUsers = true;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<PubquizDbContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -91,8 +91,8 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = issuer,
             ValidAudience = audience,
-            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-            ClockSkew = TimeSpan.Zero
+            IssuerSigningKey = new SymmetricSecurityKey(issuerSigningKey),
+            ClockSkew = TimeSpan.FromMinutes(1),
         };
 
         options.Events = new JwtBearerEvents
@@ -113,9 +113,6 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
-
-builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();
 
@@ -138,9 +135,7 @@ app.MapHub<GameHub>("/gameRoom");
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<PubquizDbContext>();
-    await db.Database.MigrateAsync();
-    await DbSeeder.SeedAsync(db);
+    await DbSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 app.Run();

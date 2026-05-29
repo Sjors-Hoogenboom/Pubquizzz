@@ -1,61 +1,120 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using PubquizBackend.Models;
 using PubquizBackend.Models.Dtos;
 using PubquizBackend.Models.Entities;
-using PubquizBackend.Models.Helpers;
 using PubquizBackend.Repository;
 
 namespace PubquizBackend.Service;
 
-public sealed class AuthService : IAuthService
+public class AuthService(
+    IAuthRepository authRepository,
+    ITokenService tokenService) : IAuthService
 {
-    private readonly IAuthRepository _repo;
-    private readonly IPasswordHasher<User> _hasher;
-    private readonly ITokenService _tokens;
-
-    public AuthService(IAuthRepository repo, IPasswordHasher<User> hasher, ITokenService tokens)
-    {
-        _repo = repo;
-        _hasher = hasher;
-        _tokens = tokens;
-    }
-
     public async Task<LoginResponseDTO?> LoginAsync(LoginRequestDTO req, CancellationToken ct)
     {
-        var email = NormalizeEmail(req.Email);
-        var user = await _repo.GetByEmailAsync(email, ct);
-        if (user is null) return null;
+        ct.ThrowIfCancellationRequested();
 
-        var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, req.Password);
-        if (result == PasswordVerificationResult.Failed) return null;
+        var user = await FindUserByUsernameOrEmailAsync(req.UsernameOrEmail);
 
-        var (token, exp) = _tokens.Create(user);
-        return new LoginResponseDTO { AccessToken = token, ExpiresAtUtc = exp };
+        if (user is null)
+        {
+            return null;
+        }
+
+        var passwordValid = await authRepository.CheckPasswordAsync(user, req.Password);
+
+        if (!passwordValid)
+        {
+            return null;
+        }
+
+        var roles = await authRepository.GetRolesAsync(user);
+
+        var tokenResult = tokenService.Create(user, roles);
+
+        return new LoginResponseDTO
+        {
+            AccessToken = tokenResult.token,
+            ExpiresAtUtc = tokenResult.expiresUtc
+        };
     }
 
-    public async Task<(UserDTO user, LoginResponseDTO token)?> RegisterAsync(RegisterRequestDTO req, CancellationToken ct)
+    public async Task<AuthResult> RegisterAsync(RegisterRequestDTO req, CancellationToken ct)
     {
-        var email = NormalizeEmail(req.Email);
+        ct.ThrowIfCancellationRequested();
 
-        if (await _repo.EmailExistsAsync(email, ct))
-            return null;
+        var existingUsername = await authRepository.FindByUsernameAsync(req.Username);
 
-        var user = new User
+        if (existingUsername is not null)
         {
-            UserId = Guid.NewGuid(),
-            DisplayName = req.DisplayName.Trim(),
-            Email = email,
+            return AuthResult.Failed(
+                ["Username is already taken."],
+                isConflict: true
+            );
+        }
+
+        var existingEmail = await authRepository.FindByEmailAsync(req.Email);
+
+        if (existingEmail is not null)
+        {
+            return AuthResult.Failed(
+                ["Email is already taken."],
+                isConflict: true
+            );
+        }
+
+        var defaultRole = Role.User.ToString();
+
+        var roleExists = await authRepository.RoleExistsAsync(defaultRole);
+
+        if (!roleExists)
+        {
+            return AuthResult.Failed(
+                [$"Role '{defaultRole}' does not exist. Did the seeder run?"]
+            );
+        }
+
+        var user = new ApplicationUser
+        {
+            Id = Guid.NewGuid(),
+            UserName = req.Username,
+            Email = req.Email,
+            DisplayName = req.Username,
             CreationDate = DateTime.UtcNow
         };
 
-        user.PasswordHash = _hasher.HashPassword(user, req.Password);
-        user.Roles.Add(new UserRole { UserId = user.UserId, Role = Role.User, User = user });
+        var createResult = await authRepository.CreateUserAsync(user, req.Password);
 
-        await _repo.AddAsync(user, ct);
-        await _repo.SaveChangesAsync(ct);
-        
-        var (token, exp) = _tokens.Create(user);
-        return (user.ToDto(), new LoginResponseDTO { AccessToken = token, ExpiresAtUtc = exp });
+        if (!createResult.Succeeded)
+        {
+            return AuthResult.Failed(
+                createResult.Errors.Select(e => e.Description)
+            );
+        }
+
+        var roleResult = await authRepository.AddToRoleAsync(user, defaultRole);
+
+        if (!roleResult.Succeeded)
+        {
+            return AuthResult.Failed(
+                roleResult.Errors.Select(e => e.Description)
+            );
+        }
+
+        return AuthResult.Success();
     }
 
-    private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
+    private async Task<ApplicationUser?> FindUserByUsernameOrEmailAsync(string usernameOrEmail)
+    {
+        if (usernameOrEmail.Contains('@'))
+        {
+            var userByEmail = await authRepository.FindByEmailAsync(usernameOrEmail);
+
+            if (userByEmail is not null)
+            {
+                return userByEmail;
+            }
+        }
+
+        return await authRepository.FindByUsernameAsync(usernameOrEmail);
+    }
 }

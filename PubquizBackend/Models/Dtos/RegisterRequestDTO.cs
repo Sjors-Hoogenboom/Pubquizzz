@@ -4,14 +4,14 @@ namespace PubquizBackend.Models.Dtos;
 
 public class RegisterRequestDTO
 {
+    [Required] [MinLength(3)] 
+    public string Username { get; init; } = null!;
+
     [Required]
-    public string DisplayName { get; set; }
-    
-    [Required]
-    [DataType(DataType.EmailAddress)]
-    public string Email { get; set; }
-    
+    [EmailAddress]
+    public string Email { get; init; } = null!;
+
     [Required]
     [DataType(DataType.Password)]
-    public string Password { get; set; }
+    public string Password { get; init; } = null!;
 }

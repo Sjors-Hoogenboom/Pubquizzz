@@ -1,58 +1,75 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using PubquizBackend.Configuration;
 using PubquizBackend.Models.Entities;
 
 namespace PubquizBackend.Service;
 
 public sealed class TokenService : ITokenService
 {
-    private readonly string _issuer;
-    private readonly string _audience;
-    private readonly SymmetricSecurityKey _key;
-    private readonly int _minutes;
+    private readonly IConfiguration _configuration;
 
-    public TokenService(IConfiguration cfg)
+    public TokenService(IConfiguration configuration)
     {
-        _issuer = cfg["jwt:issuer"]!;
-        _audience = cfg["jwt:audience"]!;
-        var key = cfg["jwt:key"] ?? throw new InvalidOperationException("Missing jwt:key");
-        byte[] keyBytes;
-        try { keyBytes = Convert.FromBase64String(key); }
-        catch { keyBytes = Encoding.UTF8.GetBytes(key); }
-        _key = new SymmetricSecurityKey(keyBytes);
-        _minutes = int.TryParse(cfg["jwt:accessTokenMinutes"], out var m) ? m : 60;
+        _configuration = configuration;
     }
 
-    public (string token, DateTime expiresUtc) Create(User user)
+    public (string token, DateTime expiresUtc) Create(
+        ApplicationUser user,
+        IEnumerable<string> roles)
     {
+        var issuer = _configuration["Jwt:Issuer"];
+        var audience = _configuration["Jwt:Audience"];
+
+        var minutesText = _configuration["Jwt:AccessTokenMinutes"];
+        var minutes = int.TryParse(minutesText, out var parsedMinutes)
+            ? parsedMinutes
+            : 60;
+
+        var expiresUtc = DateTime.UtcNow.AddMinutes(minutes);
+
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            
-            new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-            new(JwtRegisteredClaimNames.UniqueName, user.DisplayName),
-            new(JwtRegisteredClaimNames.Email, user.Email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-        
-        foreach (var r in user.Roles.Select(x => x.Role.ToString()))
-            claims.Add(new Claim(ClaimTypes.Role, r));
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.UserName ?? string.Empty),
 
-        var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.UtcNow.AddMinutes(_minutes);
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
+            new("displayName", user.DisplayName)
+        };
+
+        if (!string.IsNullOrWhiteSpace(user.Email))
+        {
+            claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+        }
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var keyBytes = JwtKeyHelper.GetJwtKeyBytes(_configuration);
+
+        var creds = new SigningCredentials(
+            new SymmetricSecurityKey(keyBytes),
+            SecurityAlgorithms.HmacSha256
+        );
 
         var jwt = new JwtSecurityToken(
-            issuer: _issuer,
-            audience: _audience,
+            issuer: issuer,
+            audience: audience,
             claims: claims,
             notBefore: DateTime.UtcNow,
-            expires: expires,
+            expires: expiresUtc,
             signingCredentials: creds
         );
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
-        return (token, expires);
+
+        return (token, expiresUtc);
     }
 }

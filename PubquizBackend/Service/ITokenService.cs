@@ -4,5 +4,5 @@ namespace PubquizBackend.Service;
 
 public interface ITokenService
 {
-    (string token, DateTime expiresUtc) Create(User user);
+    (string token, DateTime expiresUtc) Create(ApplicationUser user, IEnumerable<string> roles);
 }

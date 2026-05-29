@@ -14,7 +14,7 @@ public class UserService : IUserService
 
     public async Task<DisplayNameDTO?> GetDisplayNameAsync(Guid id)
     {
-        var user = await _repo.GetByIdAsync(id);
+        var user = await _repo.FindByIdAsync(id);
 
         if (user is null) return null;
         

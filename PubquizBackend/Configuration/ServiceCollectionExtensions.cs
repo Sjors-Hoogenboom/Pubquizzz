@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IPubquizService, PubquizService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
         services.AddSingleton<IGameManagerService, GameManagerService>();
         services.AddScoped<IGameService, GameService>();

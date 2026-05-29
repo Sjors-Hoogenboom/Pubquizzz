@@ -1,31 +1,49 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PubquizBackend.Data;
+﻿using Microsoft.AspNetCore.Identity;
 using PubquizBackend.Models.Entities;
 
 namespace PubquizBackend.Repository;
 
-
-public sealed class AuthRepository : IAuthRepository
+public class AuthRepository(
+    UserManager<ApplicationUser> userManager,
+    RoleManager<IdentityRole<Guid>> roleManager) : IAuthRepository
 {
-    private readonly PubquizDbContext _db;
-    public AuthRepository(PubquizDbContext db) => _db = db;
-
-    public Task<User?> GetByEmailAsync(string normalizedEmail, CancellationToken ct) =>
-        _db.Users
-            .Include(u => u.Roles)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == normalizedEmail, ct);
-
-    public Task<User?> GetByIdAsync(Guid id, CancellationToken ct) =>
-        _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == id, ct);
-
-    public Task<bool> EmailExistsAsync(string normalizedEmail, CancellationToken ct) =>
-        _db.Users.AsNoTracking().AnyAsync(u => u.Email == normalizedEmail, ct);
-
-    public async Task AddAsync(User user, CancellationToken ct)
+    public Task<ApplicationUser?> FindByIdAsync(Guid id)
     {
-        await _db.Users.AddAsync(user, ct);
+        return userManager.FindByIdAsync(id.ToString());
     }
 
-    public Task SaveChangesAsync(CancellationToken ct) => _db.SaveChangesAsync(ct);
+    public Task<ApplicationUser?> FindByUsernameAsync(string username)
+    {
+        return userManager.FindByNameAsync(username);
+    }
+
+    public Task<ApplicationUser?> FindByEmailAsync(string email)
+    {
+        return userManager.FindByEmailAsync(email);
+    }
+
+    public Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
+    {
+        return userManager.CheckPasswordAsync(user, password);
+    }
+
+    public Task<IdentityResult> CreateUserAsync(ApplicationUser user, string password)
+    {
+        return userManager.CreateAsync(user, password);
+    }
+
+    public Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role)
+    {
+        return userManager.AddToRoleAsync(user, role);
+    }
+
+    public Task<bool> RoleExistsAsync(string role)
+    {
+        return roleManager.RoleExistsAsync(role);
+    }
+
+    public Task<IList<string>> GetRolesAsync(ApplicationUser user)
+    {
+        return userManager.GetRolesAsync(user);
+    }
 }
