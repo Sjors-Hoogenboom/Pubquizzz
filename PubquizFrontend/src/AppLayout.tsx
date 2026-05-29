@@ -1,15 +1,17 @@
-import Navbar from "@/components/Layout/Navbar.tsx"
-import Footer from "@/components/Layout/Footer.tsx"
-import { Outlet } from "react-router-dom"
+import Navbar from "@/components/Layout/Navbar";
+import Footer from "@/components/Layout/Footer";
+import { Outlet } from "react-router-dom";
+
+import css from "./AppLayout.module.scss";
 
 export default function AppLayout() {
     return (
         <>
             <Navbar />
-            <main className="pt-14">
+            <main className={css.main}>
                 <Outlet />
             </main>
             <Footer />
         </>
-    )
+    );
 }

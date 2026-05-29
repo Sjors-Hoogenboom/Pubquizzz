@@ -1,56 +1,78 @@
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
-import {Button} from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {useAuth} from "@/context/AuthContext"
+import { useEffect, useRef, useState } from "react";
+
+import { useAuth } from "@/context/useAuth";
+
+import css from "./UserNav.module.scss";
+
+function getInitials(name: string | undefined): string {
+    if (!name) return "U";
+    return name
+        .trim()
+        .split(/\s+/)
+        .map((part) => part[0] ?? "")
+        .join("")
+        .toUpperCase()
+        .substring(0, 2);
+}
 
 export function UserNav() {
-    const {logout, user} = useAuth();
-
-    const getInitials = (name) => {
-        if (!name) return "U";
-        return name
-            .trim()
-            .split("")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .substring(0, 2);
-    };
+    const { logout, user } = useAuth();
+    const [open, setOpen] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement | null>(null);
 
     const displayName = user?.displayName || "User";
     const initials = getInitials(displayName);
 
+    useEffect(() => {
+        if (!open) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                wrapperRef.current &&
+                !wrapperRef.current.contains(event.target as Node)
+            ) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [open]);
+
+    const handleLogout = () => {
+        setOpen(false);
+        logout();
+    };
+
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage src="" alt="@user"/>
-                        <AvatarFallback>{initials}</AvatarFallback>
-                    </Avatar>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">My Account</p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                            {displayName}
-                        </p>
+        <div className={css.wrapper} ref={wrapperRef}>
+            <button
+                type="button"
+                className={css.trigger}
+                aria-haspopup="menu"
+                aria-expanded={open}
+                onClick={() => setOpen((prev) => !prev)}
+            >
+                <span className={css.avatar}>{initials}</span>
+            </button>
+
+            {open && (
+                <div className={css.menu} role="menu">
+                    <div className={css.label}>
+                        <p className={css.labelTitle}>My Account</p>
+                        <p className={css.labelSub}>{displayName}</p>
                     </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator/>
-                <DropdownMenuItem onClick={logout} className="cursor-pointer">
-                    Log out
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
+                    <div className={css.separator} />
+                    <button
+                        type="button"
+                        role="menuitem"
+                        className={css.item}
+                        onClick={handleLogout}
+                    >
+                        Log out
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 }

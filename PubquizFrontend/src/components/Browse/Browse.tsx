@@ -1,25 +1,45 @@
 import { useEffect, useState } from "react";
-import { fetchQuizApi, createGameApi } from "@/api/http.ts";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+
+import { createGameApi, fetchQuizApi } from "@/api/http";
+import { useAuth } from "@/context/useAuth";
+
+import css from "./Browse.module.scss";
+
+type Quiz = {
+    pubquizId?: string;
+    id?: string;
+    title: string;
+    description?: string;
+    questions?: unknown[];
+};
 
 export default function Browse() {
-    const [quizzes, setQuizzes] = useState([]);
-    const [loading, setLoading] = useState(null);
-    const [errors, setErrors] = useState({});
+    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+    const [loading, setLoading] = useState<string | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const { user } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchQuizApi()
-            .then(data => setQuizzes(Array.isArray(data) ? data : [data]))
+            .then((data) => setQuizzes(Array.isArray(data) ? data : [data]))
             .catch(console.error);
     }, []);
 
-    const handleHost = async (quizId) => {
+    const triggerError = (id: string, message: string) => {
+        setErrors((prev) => ({ ...prev, [id]: message }));
+        setTimeout(() => {
+            setErrors((prev) => {
+                const next = { ...prev };
+                delete next[id];
+                return next;
+            });
+        }, 3000);
+    };
+
+    const handleHost = async (quizId: string) => {
         if (!user) {
             triggerError(quizId, "Please log in to host");
             return;
@@ -29,50 +49,40 @@ export default function Browse() {
         try {
             const gameData = await createGameApi(quizId);
             navigate(`/host/${gameData.roomCode}`);
-        } catch (error) {
+        } catch {
             triggerError(quizId, "Failed to start");
         } finally {
             setLoading(null);
         }
     };
 
-    const triggerError = (id, message) => {
-        setErrors(prev => ({ ...prev, [id]: message }));
-        setTimeout(() => {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[id];
-                return newErrors;
-            });
-        }, 3000);
-    };
-
     return (
-        <div className="flex flex-col items-center pt-36 min-h-screen text-white">
-            <h1 className="text-3xl font-bold mb-6">Browse Quizzes</h1>
-            <div className="grid grid-cols-1 gap-4 w-full max-w-3xl">
+        <div className={css.page}>
+            <h1 className={css.title}>Browse Quizzes</h1>
+            <div className={css.list}>
                 {quizzes.map((quiz) => {
-                    const id = quiz.pubquizId || quiz.id;
+                    const id = quiz.pubquizId ?? quiz.id ?? "";
                     const isError = !!errors[id];
                     const isLoading = loading === id;
 
                     return (
-                        <Card key={id} className="flex flex-col justify-between">
-                            <CardHeader>
-                                <CardTitle>{quiz.title}</CardTitle>
-                                <CardDescription>{quiz.description || ""}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">
-                                    {quiz.questions?.length || 0} Questions
+                        <article key={id} className={css.card}>
+                            <header className={css.cardHeader}>
+                                <h2 className={css.cardTitle}>{quiz.title}</h2>
+                                <p className={css.cardDescription}>
+                                    {quiz.description ?? ""}
                                 </p>
-                            </CardContent>
-                            <CardFooter>
-                                <Button
-                                    className={`w-full text-white transition-all duration-300 ${
-                                        isError
-                                            ? "bg-red-600 "
-                                            : "bg-indigo-600 hover:bg-indigo-700"
+                            </header>
+                            <div className={css.cardContent}>
+                                <p className={css.meta}>
+                                    {quiz.questions?.length ?? 0} Questions
+                                </p>
+                            </div>
+                            <footer className={css.cardFooter}>
+                                <button
+                                    type="button"
+                                    className={`${css.button} ${
+                                        isError ? css.buttonError : ""
                                     }`}
                                     onClick={() => handleHost(id)}
                                     disabled={isLoading || isError}
@@ -81,11 +91,10 @@ export default function Browse() {
                                         ? errors[id]
                                         : isLoading
                                             ? "Creating..."
-                                            : "Host Game"
-                                    }
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                                            : "Host Game"}
+                                </button>
+                            </footer>
+                        </article>
                     );
                 })}
             </div>

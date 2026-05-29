@@ -1,11 +1,13 @@
-import SignupForm from "@/components/Login/SignupForm.tsx"
+import SignupForm from "@/components/Login/SignupForm";
+
+import css from "./Login.module.scss";
 
 export default function SignupPage() {
     return (
-        <div className="bg-background flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-            <div className="w-full max-w-sm">
-                <SignupForm/>
+        <div className={css.page}>
+            <div className={css.container}>
+                <SignupForm />
             </div>
         </div>
-    )
+    );
 }

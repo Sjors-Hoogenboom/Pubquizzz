@@ -1,11 +1,16 @@
-import {Button} from "@/components/ui/button"
-import {Link, useNavigate} from "react-router-dom"
-import {useAuth} from "@/context/AuthContext.tsx";
-import {useState} from "react";
-import {Input} from "@/components/ui/input.tsx";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-export default function Hero({onViewFeatures}) {
-    const {user} = useAuth();
+import { useAuth } from "@/context/useAuth";
+
+import css from "./Hero.module.scss";
+
+type HeroProps = {
+    onViewFeatures: () => void;
+};
+
+export default function Hero({ onViewFeatures }: HeroProps) {
+    const { user } = useAuth();
     const [joinCode, setJoinCode] = useState("");
     const navigate = useNavigate();
 
@@ -13,74 +18,69 @@ export default function Hero({onViewFeatures}) {
 
     const handleJoinQuiz = () => {
         const codeToUpper = joinCode.trim().toUpperCase();
-        if (!codeToUpper) return;
+
+        if (!codeToUpper) {
+            return;
+        }
 
         navigate(`/play/${codeToUpper}`);
-    }
+    };
 
     return (
-        <section
-            className="relative mx-auto flex min-h-[60svh] w-full max-w-6xl flex-col items-center justify-center px-4 text-center">
-            <h1 className="mb-2 text-4xl font-bold tracking-tight sm:text-6xl">
+        <section className={css.hero}>
+            <h1 className={css.title}>
                 {user ? (
-                        <span
-                            className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">
-                            Welcome, {name}
-                        </span>
-                    ) :
-                    (
-                        "Pubquizzz maker"
-                    )}
+                    <span className={css.gradientText}>Welcome, {name}</span>
+                ) : (
+                    "Pubquizzz maker"
+                )}
             </h1>
 
-            <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-                {user ? (
-                    "Ready to make or play a quiz?"
-                ) : (
-                    "Create and host your own pubquizzes easily. Check the latest quizzes and start playing today."
-                )}
+            <p className={css.description}>
+                {user
+                    ? "Ready to make or play a quiz?"
+                    : "Create and host your own pubquizzes easily. Check the latest quizzes and start playing today."}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Button size="lg" asChild>
-                    <Link to="/quizzes/browse">Get started</Link>
-                </Button>
-                <Button variant="outline" size="lg" onClick={onViewFeatures}>
+            <div className={css.actions}>
+                <Link to="/quizzes/browse" className={css.primaryButton}>
+                    Get started
+                </Link>
+
+                <button
+                    type="button"
+                    className={css.outlineButton}
+                    onClick={onViewFeatures}
+                >
                     View features
-                </Button>
+                </button>
             </div>
 
-            <div className="mt-6 w-full max-w-sm">
+            <div className={css.joinContainer}>
                 {user ? (
-                    <div className="flex w-full items-center space-x-2">
-                        <Input
+                    <div className={css.joinForm}>
+                        <input
                             type="text"
                             placeholder="Enter quiz code..."
                             value={joinCode}
-                            onChange={(e) => setJoinCode(e.target.value)}
-                            className="h-12"
+                            onChange={(event) => setJoinCode(event.target.value)}
+                            className={css.joinInput}
                         />
-                        <Button
-                            className="h-12 bg-sky-600 hover:bg-sky-700 cursor-pointer text-white"
+
+                        <button
+                            type="button"
+                            className={css.joinButton}
                             onClick={handleJoinQuiz}
                         >
                             Join quiz
-                        </Button>
+                        </button>
                     </div>
                 ) : (
-                    <Button
-                        className="h-12 w-full text-base bg-sky-600 hover:bg-sky-700"
-                        asChild
-                    >
-                        <Link
-                            to="/login"
-                            className="!text-white hover:text-white"
-                        >
-                            Login
-                        </Link>
-                    </Button>
+                    <Link to="/login" className={css.loginButton}>
+                        Login
+                    </Link>
                 )}
             </div>
         </section>
-    )
+    );
 }

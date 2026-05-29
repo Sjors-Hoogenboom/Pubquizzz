@@ -1,28 +1,52 @@
-import {useCallback, useEffect, useState} from "react";
-import Question from './Question.tsx'
-import './Quiz.scss'
-import Summary from './Summary.js'
-import ErrorPage from '../Error/Error.tsx'
-import {fetchQuizApi} from '../../api/http.ts'
-import quizCompleteImg from "../../assets/rinkoShirokane.png";
+import { useCallback, useEffect, useState } from "react";
+import Question from "./Question";
+import Summary from "./Summary";
+import ErrorPage from "../Error/Error";
+import { fetchQuizApi } from "@/api/http";
+import quizCompleteImg from "@/assets/rinkoShirokane.png";
+
+type AnswerOption = {
+    answerOptionId?: string;
+    id?: string;
+    text: string;
+    isCorrect?: boolean;
+};
+
+type QuestionItem = {
+    questionId?: string;
+    text: string;
+    answers: AnswerOption[];
+};
+
+type QuizData = {
+    questions: QuestionItem[];
+};
 
 export default function Quiz() {
-    const [quiz, setQuiz] = useState(null)
-    const [userAnswers, setUserAnswers] = useState([])
+    const [quiz, setQuiz] = useState<QuizData | null>(null);
+    const [userAnswers, setUserAnswers] = useState<(AnswerOption | null)[]>([]);
     const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState<string | null>(null);
 
     const activeQuestionIndex = userAnswers.length;
     const totalQuestions = quiz?.questions?.length ?? 0;
-    const quizIsComplete = totalQuestions > 0 && activeQuestionIndex === totalQuestions;
+    const quizIsComplete =
+        totalQuestions > 0 && activeQuestionIndex === totalQuestions;
 
-    const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
-        setUserAnswers((prevUserAnswers) => {
-            if (prevUserAnswers.length >= totalQuestions) return prevUserAnswers;
-            return [...prevUserAnswers, selectedAnswer];
-        });
-    }, [totalQuestions])
-    const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer])
+    const handleSelectAnswer = useCallback(
+        (selectedAnswer: AnswerOption | null) => {
+            setUserAnswers((prev) => {
+                if (prev.length >= totalQuestions) return prev;
+                return [...prev, selectedAnswer];
+            });
+        },
+        [totalQuestions],
+    );
+
+    const handleSkipAnswer = useCallback(
+        () => handleSelectAnswer(null),
+        [handleSelectAnswer],
+    );
 
     useEffect(() => {
         const img = new Image();
@@ -39,21 +63,29 @@ export default function Quiz() {
             setIsFetching(true);
 
             try {
-                const data = await fetchQuizApi({signal: abortController.signal});
-                setQuiz(data)
-            } catch (error) {
-                if (error.name !== "AbortError") {
-                    setError({message: error.message || 'Could not fetch quiz'});
+                const data = await fetchQuizApi({
+                    signal: abortController.signal,
+                });
+                setQuiz(data as QuizData);
+            } catch (err: unknown) {
+                if (err instanceof DOMException && err.name === "AbortError") {
+                    return;
                 }
+                setError(
+                    err instanceof Error
+                        ? err.message
+                        : "Could not fetch quiz",
+                );
             } finally {
                 setIsFetching(false);
             }
         })();
+
         return () => abortController.abort();
     }, []);
 
     if (error) {
-        return <ErrorPage title="An error occurred" message={error.message ?? String(error)}/>;
+        return <ErrorPage title="An error occurred" message={error} />;
     }
 
     if (isFetching || !quiz) {
@@ -62,12 +94,16 @@ export default function Quiz() {
 
     const questions = quiz.questions ?? [];
     if (questions.length === 0) {
-        return <ErrorPage title="No questions" message="This quiz doesn't have any questions yet."/>;
+        return (
+            <ErrorPage
+                title="No questions"
+                message="This quiz doesn't have any questions yet."
+            />
+        );
     }
 
     if (quizIsComplete) {
-        return <Summary userAnswers={userAnswers}/>
-
+        return <Summary userAnswers={userAnswers} />;
     }
 
     const question = quiz.questions[activeQuestionIndex];
@@ -78,10 +114,10 @@ export default function Quiz() {
             <Question
                 key={activeQuestionIndex}
                 index={activeQuestionIndex}
-                question={{...question, isLast}}
+                question={{ ...question, isLast }}
                 onSelectAnswer={handleSelectAnswer}
                 onSkipAnswer={handleSkipAnswer}
             />
         </div>
-    )
+    );
 }

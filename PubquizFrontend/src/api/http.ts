@@ -1,6 +1,10 @@
 const BASE = import.meta.env.VITE_API_BASE ?? "";
 
-export async function fetchQuizApi({ signal } = {}) {
+type FetchQuizOptions = {
+    signal?: AbortSignal;
+};
+
+export async function fetchQuizApi({ signal }: FetchQuizOptions = {}) {
     const response = await fetch(`${BASE}/api/v1/Pubquiz/latest`, { signal });
 
     if (!response.ok) {
@@ -11,7 +15,7 @@ export async function fetchQuizApi({ signal } = {}) {
     return response.json();
 }
 
-async function handleResponse(response) {
+async function handleResponse(response: Response) {
     if (!response.ok) {
         const text = await response.text().catch(() => "");
         let message = text || `Error: ${response.status}`;
@@ -20,26 +24,38 @@ async function handleResponse(response) {
             const json = JSON.parse(text);
             message = json.message || "Request failed";
         } catch {
+            // not JSON
         }
         throw new Error(message);
     }
     return response.json();
 }
 
-export async function loginApi(credentials) {
+type LoginCredentials = {
+    email: string;
+    password: string;
+};
+
+export async function loginApi(credentials: LoginCredentials) {
     const response = await fetch(`${BASE}/api/v1/Auth/login`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
     });
     return handleResponse(response);
 }
 
-export async function registerApi(credentials) {
+type RegisterCredentials = {
+    email: string;
+    password: string;
+    displayName: string;
+};
+
+export async function registerApi(credentials: RegisterCredentials) {
     const response = await fetch(`${BASE}/api/v1/Auth/register`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
     });
     return handleResponse(response);
 }
@@ -47,29 +63,29 @@ export async function registerApi(credentials) {
 export async function fetchDisplayNameApi() {
     const token = localStorage.getItem("token");
     if (!token) {
-        throw new Error("No token found")
+        throw new Error("No token found");
     }
     const response = await fetch(`${BASE}/api/v1/User/displayName`, {
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
     });
     return handleResponse(response);
 }
 
-export async function createGameApi(quizId) {
+export async function createGameApi(quizId: string) {
     const token = localStorage.getItem("token");
     if (!token) {
-        throw new Error("No token found")
+        throw new Error("No token found");
     }
 
     const response = await fetch(`${BASE}/api/v1/Game/create/${quizId}`, {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
     });
     return handleResponse(response);

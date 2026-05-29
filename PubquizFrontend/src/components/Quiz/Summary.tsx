@@ -1,6 +1,14 @@
 import quizCompleteImg from '../../assets/rinkoShirokane.png'
 
-export default function Summary({userAnswers}) {
+type AnswerResult = {
+    isCorrect?: boolean;
+} | null;
+
+type SummaryProps = {
+    userAnswers: AnswerResult[];
+};
+
+export default function Summary({ userAnswers }: SummaryProps) {
     const skippedAnswers = userAnswers.filter(a => a === null);
     const answeredAnswers = userAnswers.filter(a => a !== null);
 

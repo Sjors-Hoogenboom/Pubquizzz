@@ -1,52 +1,78 @@
-import {useRef} from "react";
-import {Button} from "@/components/ui/button.tsx";
+import { useRef } from "react";
 
-export default function Answers({answers, selectedAnswer, answerState, onSelect}) {
-    const shuffledAnswers = useRef();
+import css from "./Answers.module.scss";
+
+type AnswerOption = {
+    answerOptionId?: string;
+    id?: string;
+    text: string;
+    isCorrect?: boolean;
+};
+
+type AnswersProps = {
+    answers: AnswerOption[];
+    selectedAnswer: AnswerOption | "" | null;
+    answerState: "" | "answered" | "correct" | "wrong";
+    onSelect: (answer: AnswerOption) => void;
+};
+
+type NormalizedAnswer = {
+    id: string;
+    text: string;
+    isCorrect: boolean;
+    raw: AnswerOption;
+};
+
+export default function Answers({
+    answers,
+    selectedAnswer,
+    answerState,
+    onSelect,
+}: AnswersProps) {
+    const shuffledAnswers = useRef<NormalizedAnswer[] | null>(null);
 
     if (!shuffledAnswers.current) {
         shuffledAnswers.current = answers
-            .map(a => ({
+            .map<NormalizedAnswer>((a) => ({
                 id: a.answerOptionId ?? a.id ?? a.text,
-                text: a.text ?? a,
+                text: a.text,
                 isCorrect: !!a.isCorrect,
-                raw: a
+                raw: a,
             }))
             .sort(() => Math.random() - 0.5);
     }
 
     return (
-        <ul id="answers">
+        <ul className={css.list}>
             {shuffledAnswers.current.map((a) => {
-                const isSelected =
-                    selectedAnswer &&
-                    (
-                        (selectedAnswer.answerOptionId ?? selectedAnswer.id ?? selectedAnswer.text)
-                        === a.id
-                    );
+                const selectedId =
+                    selectedAnswer && typeof selectedAnswer === "object"
+                        ? selectedAnswer.answerOptionId ??
+                          selectedAnswer.id ??
+                          selectedAnswer.text
+                        : null;
+                const isSelected = selectedId === a.id;
 
-                let cssClass = "";
-
+                let stateClass = "";
                 if (answerState === "answered" && isSelected) {
-                    cssClass += " selected";
+                    stateClass = css.selected;
                 } else if (
                     (answerState === "correct" || answerState === "wrong") &&
                     isSelected
                 ) {
-                    cssClass += answerState;
+                    stateClass = css[answerState];
                 }
 
                 return (
-                    <li key={a.id} className="answer">
-                        <Button
-                            variant="outline"
-                            size="lg"
+                    <li key={a.id} className={css.answer}>
+                        <button
+                            type="button"
                             onClick={() => onSelect(a.raw)}
-                            className={cssClass}
+                            className={`${css.button} ${stateClass}`}
                             disabled={answerState !== ""}
                         >
                             {a.text}
-                        </Button>
+                        </button>
                     </li>
                 );
             })}

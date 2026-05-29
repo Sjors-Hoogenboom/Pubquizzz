@@ -1,79 +1,89 @@
-import {useState} from "react"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
-import {Label} from "@/components/ui/label"
-import {Link, useNavigate} from "react-router-dom"
-import {loginApi} from "@/api/http.ts";
-import {useAuth} from "@/context/AuthContext.tsx";
+import { type FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { loginApi } from "@/api/http";
+import { useAuth } from "@/context/useAuth";
+
+import css from "./Login.module.scss";
 
 export default function LoginForm() {
-    const {login} = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [Error, setError] = useState("")
-    const [Loading, setLoading] = useState(false)
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const onSubmit = async (e) => {
-        e.preventDefault()
-        setError("")
-        setLoading(true)
+    const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
 
         try {
-            const data = await loginApi({email, password})
+            const data = await loginApi({ email, password });
             login(data.accessToken);
             navigate("/");
-        } catch (error) {
-            setError(error.message);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Login failed");
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     return (
-        <div className="flex flex-col gap-6">
-            <form onSubmit={onSubmit} className="space-y-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <a
-                        href="/"
-                        className="flex items-center justify-center rounded-md p-2 ring-offset-background transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        aria-label="Go to home"
-                    >
-                        <img src="/crownwhite.svg" alt="" className="h-8 w-8"/>
-                    </a>
-                    <h1 className="text-xl font-bold">Welcome to Pubquizzz</h1>
-                    <p className="text-sm text-muted-foreground">
-                        Don&apos;t have an account?{" "}
-                        <Link to="/signup" className="underline underline-offset-4 hover:text-foreground">
-                            Sign up
-                        </Link>
-                    </p>
-                </div>
+        <form onSubmit={onSubmit} className={css.form}>
+            <div className={css.header}>
+                <a href="/" className={css.logoLink} aria-label="Go to home">
+                    <img src="/crownwhite.svg" alt="" className={css.logo} />
+                </a>
+                <h1 className={css.title}>Welcome to Pubquizzz</h1>
+                <p className={css.subtitle}>
+                    Don&apos;t have an account?{" "}
+                    <Link to="/signup" className={css.subtitleLink}>
+                        Sign up
+                    </Link>
+                </p>
+            </div>
 
-                <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="email@example.com"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        placeholder="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Button type="submit" className="mt-8">Login</Button>
-                </div>
-            </form>
-        </div>
-    )
+            <div className={css.field}>
+                <label htmlFor="email" className={css.label}>
+                    Email
+                </label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="email@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={css.input}
+                />
+            </div>
+
+            <div className={css.field}>
+                <label htmlFor="password" className={css.label}>
+                    Password
+                </label>
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={css.input}
+                />
+            </div>
+
+            {error && <p className={css.error}>{error}</p>}
+
+            <button
+                type="submit"
+                disabled={loading}
+                className={`${css.submit} ${css.submitLogin}`}
+            >
+                {loading ? "Logging in..." : "Login"}
+            </button>
+        </form>
+    );
 }
