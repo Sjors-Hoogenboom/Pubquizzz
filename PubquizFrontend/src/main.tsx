@@ -1,16 +1,16 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
-import { AuthProvider } from "@/context/AuthContext"
-import AppLayout from "./AppLayout"
-import Home from "@/components/Home/Home"
-import LoginPage from "@/components/Login/Login"
-import SignupPage from "@/components/Login/Signup"
+import { AuthProvider } from "@/context/AuthContext.tsx"
+import AppLayout from "./AppLayout.tsx"
+import Home from "@/components/Home/Home.tsx"
+import LoginPage from "@/components/Login/Login.tsx"
+import SignupPage from "@/components/Login/Signup.tsx"
 
-import "@/index.css"
-import HostLobby from "@/components/Game/HostLobby.jsx";
-import Browse from "@/components/Browse/Browse.jsx";
-import PlayerLobby from "@/components/Game/PlayerLobby.jsx";
+import "@/index.scss"
+import HostLobby from "@/components/Game/HostLobby.tsx";
+import Browse from "@/components/Browse/Browse.tsx";
+import PlayerLobby from "@/components/Game/PlayerLobby.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>

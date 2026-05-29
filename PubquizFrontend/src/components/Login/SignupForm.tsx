@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Link, useNavigate} from "react-router-dom"
-import {registerApi} from "@/api/http.jsx";
+import {registerApi} from "@/api/http.ts";
 
 export default function SignupForm() {
     const navigate = useNavigate();

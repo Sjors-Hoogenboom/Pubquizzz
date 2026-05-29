@@ -1,9 +1,9 @@
 import {useCallback, useEffect, useState} from "react";
-import Question from './Question.jsx'
-import './Quiz.css'
-import Summary from './Summary.jsx'
-import ErrorPage from '../Error/Error.jsx'
-import {fetchQuizApi} from '../../api/http.jsx'
+import Question from './Question.tsx'
+import './Quiz.scss'
+import Summary from './Summary.js'
+import ErrorPage from '../Error/Error.tsx'
+import {fetchQuizApi} from '../../api/http.ts'
 import quizCompleteImg from "../../assets/rinkoShirokane.png";
 
 export default function Quiz() {

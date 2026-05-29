@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button"
 import {Link} from "react-router-dom"
-import {useAuth} from "@/context/AuthContext.jsx";
-import {UserNav} from "@/components/Layout/UserNav.jsx";
+import {useAuth} from "@/context/AuthContext.tsx";
+import {UserNav} from "@/components/Layout/UserNav.tsx";
 
 export default function Navbar() {
     const {token} = useAuth();

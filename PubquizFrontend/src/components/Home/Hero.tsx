@@ -1,8 +1,8 @@
 import {Button} from "@/components/ui/button"
 import {Link, useNavigate} from "react-router-dom"
-import {useAuth} from "@/context/AuthContext.jsx";
+import {useAuth} from "@/context/AuthContext.tsx";
 import {useState} from "react";
-import {Input} from "@/components/ui/input.jsx";
+import {Input} from "@/components/ui/input.tsx";
 
 export default function Hero({onViewFeatures}) {
     const {user} = useAuth();

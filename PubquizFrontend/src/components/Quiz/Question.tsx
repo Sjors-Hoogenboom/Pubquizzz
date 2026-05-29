@@ -1,5 +1,5 @@
-import QuestionTimer from "@/components/Quiz/QuestionTimer.jsx";
-import Answers from "@/components/Quiz/Answers.jsx";
+import QuestionTimer from "@/components/Quiz/QuestionTimer.tsx";
+import Answers from "@/components/Quiz/Answers.tsx";
 import {useState, useRef} from "react";
 
 export default function Question({

@@ -1,6 +1,6 @@
 import {useRef} from "react"
-import Hero from "@/components/Home/Hero"
-import Features from "@/components/Home/Features"
+import Hero from "@/components/Home/Hero.tsx"
+import Features from "@/components/Home/Features.tsx"
 
 export default function Home() {
     const featuresRef = useRef(null)

@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {fetchDisplayNameApi} from "@/api/http.jsx";
+import {fetchDisplayNameApi} from "@/api/http.ts";
 
 const AuthContext = createContext(null);
 

@@ -3,8 +3,8 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Link, useNavigate} from "react-router-dom"
-import {loginApi} from "@/api/http.jsx";
-import {useAuth} from "@/context/AuthContext.jsx";
+import {loginApi} from "@/api/http.ts";
+import {useAuth} from "@/context/AuthContext.tsx";
 
 export default function LoginForm() {
     const {login} = useAuth();

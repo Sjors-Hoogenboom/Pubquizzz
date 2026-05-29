@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchQuizApi, createGameApi } from "@/api/http";
+import { fetchQuizApi, createGameApi } from "@/api/http.ts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";

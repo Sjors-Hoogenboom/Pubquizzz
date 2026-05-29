@@ -1,5 +1,5 @@
 import {useRef} from "react";
-import {Button} from "@/components/ui/button.jsx";
+import {Button} from "@/components/ui/button.tsx";
 
 export default function Answers({answers, selectedAnswer, answerState, onSelect}) {
     const shuffledAnswers = useRef();
