@@ -36,13 +36,13 @@ export default function Question({
     onSelectAnswer,
     onSkipAnswer,
 }: QuestionProps) {
-    if (!question) return null;
-
     const [answer, setAnswer] = useState<AnswerState>({
         selectedAnswer: "",
         isCorrect: null,
     });
     const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+    if (!question) return null;
 
     let timer = 10000;
 
