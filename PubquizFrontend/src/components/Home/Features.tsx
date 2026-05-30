@@ -38,7 +38,7 @@ const features: FeatureItem[] = [
     {
         title: "More coming soon",
         contents: [
-            "Beta project, planning on adding leaderboards, themes, Dutch language support, more question types and more...",
+            "Beta project, planning on adding leaderboards, themes, Dutch language support, variety of question types and more...",
         ],
         delay: "400ms",
         span: true,

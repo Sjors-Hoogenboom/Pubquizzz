@@ -1,7 +1,6 @@
 .page {
   min-height: 100vh;
-  padding-top: 9rem;
-  padding-bottom: 4rem;
+  padding-top: 3rem;
 
   display: flex;
   flex-direction: column;
@@ -11,16 +10,12 @@
 }
 
 .title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 3rem;
 }
 
 .list {
   width: 100%;
   max-width: 48rem;
-  padding: 0 1rem;
-
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
@@ -30,36 +25,32 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--radius) + 0.25rem);
+  border-radius: 1rem;
   background-color: var(--color-surface);
-
   overflow: hidden;
 }
 
-.cardHeader {
-  padding: 1rem 1.25rem 0.5rem;
+.cardTitle {
+  margin-bottom: 1rem;
 }
 
-.cardTitle {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem;
+.cardHeader {
+  padding-left: 1.25rem;
 }
 
 .cardDescription {
-  font-size: 0.875rem;
   color: var(--color-muted);
   margin: 0;
 }
 
 .cardContent {
-  padding: 0.5rem 1.25rem 1rem;
+  padding-left: 1.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .meta {
-  font-size: 0.875rem;
   color: var(--color-muted);
   margin: 0;
 }

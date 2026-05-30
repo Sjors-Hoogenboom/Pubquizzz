@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { type ChangeEvent, type SubmitEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { registerApi } from "@/api/http";
@@ -28,7 +28,7 @@ export default function SignupForm() {
         setForm((prev) => ({ ...prev, [id]: value }));
     };
 
-    const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 

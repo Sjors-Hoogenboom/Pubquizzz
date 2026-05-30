@@ -12,7 +12,7 @@ import Browse from "@/components/Browse/Browse";
 import HostLobby from "@/components/Game/HostLobby";
 import PlayerLobby from "@/components/Game/PlayerLobby";
 
-import "@/index.scss";
+import "@/styles/index.scss";
 
 const rootElement = document.getElementById("root");
 

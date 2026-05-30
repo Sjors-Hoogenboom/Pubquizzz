@@ -1,8 +1,8 @@
 .section {
   width: 100%;
   max-width: 72rem;
-  margin: 0 auto;
-  padding: 4rem 1rem 6rem;
+  padding: 0 1rem 6rem;
+  margin: 1rem auto 0;
 }
 
 .grid {
@@ -33,25 +33,21 @@
 .card {
   display: flex;
   flex-direction: column;
-
-  padding: 1.25rem;
-
+  padding: 1.5rem;
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--radius) + 0.25rem);
+  border-radius: 1rem;
   background-color: var(--color-surface);
-
   transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
-  animation: cardIn 0.35s ease-out both;
+  animation: cardIn 0.5s ease-out both;
 
   &:hover {
-    transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   }
 }
 
 .cardSpan {
-  @media (min-width: 640px) and (max-width: 1023.98px) {
+  @media (min-width: 640px) and (max-width: 1024px) {
     grid-column: span 2;
   }
 }
@@ -61,7 +57,7 @@
 }
 
 .cardTitle {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   margin: 0;
 }
@@ -70,9 +66,5 @@
   font-size: 0.875rem;
   color: var(--color-muted);
   margin: 0;
-
-  & + & {
-    margin-top: 0.5rem;
-  }
 }
 

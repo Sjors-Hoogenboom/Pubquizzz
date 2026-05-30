@@ -35,7 +35,7 @@ export default function Navbar() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="GitHub"
-                        className={css.iconButton}
+                        className={css.githubButton}
                     >
                         <img src="/github.svg" alt="" />
                     </a>
@@ -43,10 +43,10 @@ export default function Navbar() {
                         <UserNav />
                     ) : (
                         <>
-                            <Link to="/login" className={css.ghostButton}>
+                            <Link to="/login" className={css.signinButton}>
                                 Sign in
                             </Link>
-                            <Link to="/signup" className={css.primaryButton}>
+                            <Link to="/signup" className={css.signupButton}>
                                 Sign up
                             </Link>
                         </>

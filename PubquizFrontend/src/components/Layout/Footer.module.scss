@@ -11,7 +11,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   font-size: 0.875rem;
 }
 
@@ -29,12 +28,11 @@
 .link {
   background: none;
   border: none;
-  padding: 0;
   cursor: pointer;
   font: inherit;
   color: var(--color-muted);
   text-decoration: none;
-  transition: color 150ms ease;
+  transition: color 250ms ease;
 
   &:hover {
     color: var(--color-text);

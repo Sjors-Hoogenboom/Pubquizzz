@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { loginApi } from "@/api/http";
@@ -14,7 +14,7 @@ export default function LoginForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
         setLoading(true);
