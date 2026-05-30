@@ -1,0 +1,130 @@
+.hero {
+  position: relative;
+  width: 100%;
+  max-width: 72rem;
+  min-height: 55svh;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+
+  @media (min-width: 640px) {
+    font-size: 3.75rem;
+  }
+}
+
+.gradientText {
+  background: linear-gradient(to right, #60a5fa, #2dd4bf);
+  background-clip: text;
+  color: transparent;
+}
+
+.description {
+  max-width: 60%;
+  color: var(--color-muted);
+  line-height: 1.5;
+
+  @media (min-width: 640px) {
+    font-size: 1.25rem;
+    line-height: 2rem;
+  }
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.primaryButton,
+.outlineButton,
+.joinButton,
+.loginButton {
+  min-height: 3rem;
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primaryButton,
+.joinButton,
+.loginButton {
+  border: 1px solid #0284c7;
+  background-color: #0284c7;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #0369a1;
+    border-color: #0369a1;
+    color: #ffffff;
+  }
+}
+
+.outlineButton {
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text);
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+.joinContainer {
+  width: 100%;
+  max-width: 24rem;
+  margin-top: 1.5rem;
+}
+
+.joinForm {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.joinInput {
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.75rem;
+
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+
+  font-size: 1rem;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+
+  &:focus {
+    outline: 2px solid #0284c7;
+    outline-offset: 2px;
+  }
+}
+
+.joinButton {
+  white-space: nowrap;
+}
+
+.loginButton {
+  width: 100%;
+}

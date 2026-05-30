@@ -1,0 +1,97 @@
+const BASE = import.meta.env.VITE_API_BASE ?? "";
+
+type FetchQuizOptions = {
+    signal?: AbortSignal;
+};
+
+export async function fetchQuizApi({ signal }: FetchQuizOptions = {}) {
+    const response = await fetch(`${BASE}/api/v1/Pubquiz/latest`, { signal });
+
+    if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        throw new Error(text || "Failed to fetch quiz");
+    }
+
+    return response.json();
+}
+
+async function handleResponse(response: Response) {
+    if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        let message = text || `Error: ${response.status}`;
+
+        try {
+            const json = JSON.parse(text);
+            message = json.message || "Request failed";
+        } catch {
+            // not JSON
+        }
+        throw new Error(message);
+    }
+    return response.json();
+}
+
+type LoginCredentials = {
+    email: string;
+    password: string;
+};
+
+export async function loginApi(credentials: LoginCredentials) {
+    const response = await fetch(`${BASE}/api/v1/Auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+    });
+    return handleResponse(response);
+}
+
+type RegisterCredentials = {
+    email: string;
+    password: string;
+    displayName: string;
+};
+
+export async function registerApi(credentials: RegisterCredentials) {
+    const response = await fetch(`${BASE}/api/v1/Auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+    });
+    return handleResponse(response);
+}
+
+export async function fetchDisplayNameApi() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("No token found");
+    }
+    const response = await fetch(`${BASE}/api/v1/User/displayName`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+    return handleResponse(response);
+}
+
+export async function createGameApi(quizId: string) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("No token found");
+    }
+
+    const response = await fetch(`${BASE}/api/v1/Game/create/${quizId}`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+    return handleResponse(response);
+}
+
+export async function fetchAllQuizzesApi() {
+    const response = await fetch(`${BASE}/api/v1/Pubquiz/all`);
+    return handleResponse(response);
+}
